@@ -180,6 +180,9 @@ for(i in 1:dim(BBS_routes_sp)[1]){
   }
 }
 
+
+save(BBS_routes_sp, file = "BBS_routes_sp2.Rdata")
+
 ## Alternative precipitation measures
 for(i in 1:dim(BBS_routes_sp)[1]){
   print(i)
