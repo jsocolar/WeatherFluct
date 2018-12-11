@@ -186,8 +186,8 @@ save(BBS_routes_sp, file = "BBS_routes_sp2.Rdata")
 ## Alternative precipitation measures
 for(i in 1:dim(BBS_routes_sp)[1]){
   print(i)
-  #wd <- read.csv(paste("C:/Users/TingleyLab/Dropbox/BBS_Project/Daymet/", wdata[i], sep=""), skip=7) # this skips the first X number of rows to read data, including the header (it can add this)
-  wd <- read.csv(paste("C:/Users/Tingley Lab_2/Dropbox/BBS_Project/Daymet/", wdata[i], sep=""), skip=7) #Lab 2 computer
+  wd <- read.csv(paste("Daymet/", wdata[i], sep=""), skip=7) # this skips the first X number of rows to read data, including the header (it can add this)
+  #wd <- read.csv(paste("C:/Users/Tingley Lab_2/Dropbox/BBS_Project/Daymet/", wdata[i], sep=""), skip=7) #Lab 2 computer
 
   wd_june_aug <- wd[wd$yday > 152 & wd$yday < 243, ] # june weather data
   wd_april <- wd[wd$yday < 120, ] # jan - April data
@@ -204,9 +204,7 @@ for(i in 1:dim(BBS_routes_sp)[1]){
     eval(parse(text = paste0("yr2_",k, "<- rbind(wd_april[which(wd_april$year==",k,"),],wd_july[which(wd_july$year==",k-1,"),] )")))
     eval(parse(text = paste0("BBS_routes_sp$mean_july_april_",k,"[i] <- mean(yr2_",k, "$prcp..mm.day.)"))) #mean july(t-1) to april precip
   }
-  }
-
-
+}
 
 ## Combine with the lag data and create a new data document to move forward with
 
