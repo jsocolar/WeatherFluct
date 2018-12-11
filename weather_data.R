@@ -206,6 +206,8 @@ for(i in 1:dim(BBS_routes_sp)[1]){
   }
 }
 
+save(BBS_routes_sp, file = "BBS_routes_sp3.Rdata") # Changing the filename so it doesn't overwrite our earlier saves
+
 ## Combine with the lag data and create a new data document to move forward with
 
 # read in the lag data
@@ -226,9 +228,7 @@ lag_1 <- dplyr::inner_join(lag_1, good_birds, by = "aou")
 BBS_routes_sp$routeID <- BBS_routes_sp$route_ID
 
 ## Save BBS_routes_sp as R.data file
-save(BBS_routes_sp, file = "BBS_routes_sp.Rdata")
-
-load("./BBS_Data/BBS_routes_sp.Rdata")
+save(BBS_routes_sp, file = "BBS_routes_sp4.Rdata") # Changing the filename so it doesn't overwrite our earlier saves
 
 # Begin cutting down on bbs_routes_sp
 BBS_routes_sp2 <- BBS_routes_sp[,-c(1:10)]
