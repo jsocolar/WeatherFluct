@@ -257,14 +257,14 @@ names(survey_weather_2)[2:73] <- paste0(names(survey_weather_2)[2:73], "_year_2"
 
 lag_weather <- dplyr::inner_join(lag_weather, survey_weather_2, by = c("routeID", "year_2"))
 
-save(lag_weather, file = "lag_weather.Rdata")
-write.csv(lag_weather, file = "lag_weather.csv")
+save(lag_weather, file = "BBS_Data/lag_weather.Rdata")
+write.csv(lag_weather, file = "BBS_Data/lag_weather.csv")
 
 
 #### Read in the weather data to transform it ----------------------------------------------------------------------------
 ## Load in the data
 
-lag_and_weather <- read.csv("./BBS_Data/lag1_weather.csv", header = TRUE)
+lag_and_weather <- read.csv("BBS_Data/lag_weather.csv", header = TRUE)
 
 # Pull out just the count data
 lag <- lag_and_weather[,c(2:10, 21:25)]
