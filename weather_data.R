@@ -90,7 +90,6 @@ BBS_routes_sp <- BBS_routes_sp[ , -c(1:5)]
 # Elevation:
 BBS_routes_sp$w_elev <- rep(NA, dim(BBS_routes_sp)[1])
 
-
 # Getting weather data for each month
 # Overall means for each weather point for each site across years
 for(i in 1:12){
@@ -103,20 +102,19 @@ for(i in 1:12){
 # Populate BBS_routes_sp with appropriate data:
 wdata <- list.files("Daymet")
 
-wd_list <- list()
-
+wd_list <- list() # Store all the imported weather csv files in a list, so we don't have to
+                  # re-import later
 for(i in 1:dim(BBS_routes_sp)[1]){
-  # Get out the elevation
-  md <- read.csv(paste("Daymet/", wdata[i], sep=""), header=F) ## this reads in the files of the daymet (in alphabetical order!)
+  # Get the elevation
+  md <- read.csv(paste("Daymet/", wdata[i], sep=""), header=F) ## this reads in the files of the daymet (in alphabetical, not numeric, order)
   BBS_routes_sp$w_elev[i] <- as.numeric(gsub("\\D", "", md[4,])) # This pulls out the elevation (it is in the fourth cell). Remove the characters not digits, left with elevation
   
-  # Get out monthly data
+  # Get the weather data and store as list
   wd_list[[i]] <- read.csv(paste("Daymet/", wdata[i], sep=""), skip=7) # this skips the first 7 rows to read data
 }
-save(wd_list, file = "wd_list.Rdata") # Probably don't need to save this. I had wanted to save
-# in case reading in the .csv's was a substantial part of 
-# the runtime, but it seems to be a relatively small fraction.
+save(wd_list, file = "wd_list.Rdata")
 
+load("wd_list.Rdata")
 for(i in 1:dim(BBS_routes_sp)[1]){
   wd <- wd_list[[i]]
   wd_1 <- wd[wd$yday > 1 & wd$yday < 31, ] # january weather data
@@ -132,35 +130,36 @@ for(i in 1:dim(BBS_routes_sp)[1]){
   wd_11 <- wd[wd$yday > 305 & wd$yday < 334, ] # november weather data
   wd_12 <- wd[wd$yday > 335 & wd$yday < 365, ] # december weather data
 
-  # Get the overall means from all months per site
+  # Monthly averages across years
   for(j in 1:12){
     eval(parse(text = paste0("BBS_routes_sp$mean_high_",j,"[",i,"] <- mean(wd_",j,"$tmax..deg.c)"))) #site mean high
     eval(parse(text = paste0("BBS_routes_sp$mean_low_",j,"[",i,"] <- mean(wd_",j,"$tmin..deg.c)"))) #site mean min
     eval(parse(text = paste0("BBS_routes_sp$mean_precip_",j,"[",i,"] <- mean(wd_",j,"$prcp..mm.day.)"))) #site mean precip
     eval(parse(text = paste0("BBS_routes_sp$mean_swe_",j,"[",i,"] <- mean(wd_",j,"$swe..kg.m.2)"))) #site mean swe
   }
-  
   print(i)
 }
 
-# Now get monthly averages for each year
-# Prepare columns:
+# Monthly averages within each year
+# Switch from spatialPointsDataFrame to DataFrame
 BBS_routes_data <- BBS_routes_sp@data
 BBS_routes_data$lat <- BBS_routes_sp@coords[ , 1]
 BBS_routes_data$lon <- BBS_routes_sp@coords[ , 2]
 BBS_weather <- BBS_routes_data
 
+# Prepare columns
 for(j in 1:12){
   eval(parse(text = paste0("BBS_weather$monthly_avg_high_",j, "<- NA"))) #mean max
   eval(parse(text = paste0("BBS_weather$monthly_max_high_",j, "<- NA"))) #highest max
   eval(parse(text = paste0("BBS_weather$monthly_avg_low_",j, "<- NA"))) #mean min
   eval(parse(text = paste0("BBS_weather$monthly_min_low_",j, "<- NA"))) #lowest min
   eval(parse(text = paste0("BBS_weather$monthly_avg_precip_",j, "<- NA"))) #mean precip
-  eval(parse(text = paste0("BBS_weather$montly_avg_swe_",j, "<- NA"))) #mean swe
+  eval(parse(text = paste0("BBS_weather$monthly_avg_swe_",j, "<- NA"))) #mean swe
 }
 
-
-
+# Create a list of replicated data.frames, one for each year
+    # Next, we will populate the list as appropriate, and then rBind its elements together.
+    # The row indexing is much simpler this way, compared to rBinding and then populating.
 df.list <- list()
 for(i in 1980:2016){
   BBS_weather_y <- BBS_weather
@@ -168,6 +167,7 @@ for(i in 1980:2016){
   df.list[[i-1979]] <- BBS_weather_y
 }
 
+# Populate the list of data.frames
 for(i in 1:dim(BBS_routes_sp)[1]){
   print(i)
   wd <- wd_list[[i]]
@@ -197,51 +197,14 @@ for(i in 1:dim(BBS_routes_sp)[1]){
   }
 }
 
+# rBind the list into a single large data.frame
+survey_weather <- dplyr::bind_rows(df.list)
+save(survey_weather, file = "survey_weather.Rdata")
 
-BBS_weather <- dplyr::bind_rows(df.list)
-
-
-
-
-# Other values that aren't monthly: june_aug precip and july_april precip: we can build these
-# from the monthly data.
-#for(i in 1980:2016){
-#    eval(parse(text = paste0("BBS_routes_sp$mean_june_aug_precip_",i,"<- NA"))) # mean jun-aug precip
-#}
-#for(i in 1981:2016){
-#  eval(parse(text = paste0("BBS_routes_sp$mean_july_april_",i,"<- NA"))) # mean jul(t-1) - april
-#}
-
-
-save(BBS_routes_sp, file = "BBS_routes_sp2.Rdata")
-
-## Alternative precipitation measures
-for(i in 1:dim(BBS_routes_sp)[1]){
-  print(i)
-  wd <- read.csv(paste("Daymet/", wdata[i], sep=""), skip=7) # this skips the first X number of rows to read data, including the header (it can add this)
-  #wd <- read.csv(paste("C:/Users/Tingley Lab_2/Dropbox/BBS_Project/Daymet/", wdata[i], sep=""), skip=7) #Lab 2 computer
-
-  wd_june_aug <- wd[wd$yday > 152 & wd$yday < 243, ] # june weather data
-  wd_april <- wd[wd$yday < 120, ] # jan - April data
-  wd_july <- wd[wd$yday > 182 , ] # july - dec weather data
-  
-  # Get the june through august means from per site
-  for(j in 1980:2016){
-      eval(parse(text = paste0("yr_",j, "<- wd_june_aug[which(wd_june_aug$year==",j,"),]")))
-      eval(parse(text = paste0("BBS_routes_sp$mean_june_aug_precip_",j,"[i] <- mean(yr_",j, "$prcp..mm.day.)"))) #mean june - august precip
-
-  }
-  
-  for(k in 1981:2016){
-    eval(parse(text = paste0("yr2_",k, "<- rbind(wd_april[which(wd_april$year==",k,"),],wd_july[which(wd_july$year==",k-1,"),] )")))
-    eval(parse(text = paste0("BBS_routes_sp$mean_july_april_",k,"[i] <- mean(yr2_",k, "$prcp..mm.day.)"))) #mean july(t-1) to april precip
-  }
-}
-
-save(BBS_routes_sp, file = "BBS_routes_sp3.Rdata") # Changing the filename so it doesn't overwrite our earlier saves
+# The alternative precip measures can be easily derived from the monthly summaries.
 
 ## Combine with the lag data and create a new data document to move forward with
-load("BBS_routes_sp3.Rdata")
+load("survey_weather.Rdata")
 
 # read in the lag data
 lag_1 <- read.csv("BBS_Data/lag1_80to16_data.csv")
@@ -256,38 +219,49 @@ good_birds$aou <- good_birds$AOU
 lag_1 <- lag_1[which(lag_1$aou %in% good_birds$AOU), ]
 lag_1 <- dplyr::inner_join(lag_1, good_birds, by = "aou")
 
-#Combine it with the BBS_routes_sp
+# Combine it with the survey_weather
+# For most variables:
+# The months July through December of year Y matter for lags with Y == year_1
+# The months January through May of year Y matter for lags with Y == year_2
+# June can matter in both years.
+# For species whose breeding productivity is affected precipitation in the previous 
+#   fall/winter/spring, the year that matters is Y == year_1 for January through May,
+#   and Y == year_1 - 1 for July through December.
 
-# Get rid of some superfluous columns in BBS_routes_sp
-BBS_routes_sp2 <- BBS_routes_sp[,-c(1:10)]
-names(BBS_routes_sp2)[2] <- "routeID"
-lag_weather <- dplyr::inner_join(lag_1, BBS_routes_sp2@data[,c(1:50)], by = "routeID")
+# So what we're going to do for now is add on rows to lag_1 giving the year_2 values for each 
+# month, the year_1 values for each month, and the year_1 - 1 values for each month.
 
-BBS_routes_sp3 <- BBS_routes_sp2[, c(2, 51:2788)]
+# For the cross-year averages, we don't need to keep track of year.
+survey_weather_averages <- survey_weather[1:5651 , 6:55]
+lag_weather <- dplyr::inner_join(lag_1, survey_weather_averages, by = "routeID")
 
-bbs3 <- reshape2::melt(BBS_routes_sp3@data, id.vars = c("routeID"))
-bbs3 <- bbs3[which(bbs3$variable != "routeID.1"), ]
+# We append the year_0 data
+lag_1$year_0 <- lag_1$year_1 - 1
+survey_weather_0 <- survey_weather[ , c(6, 58:130)]
+names(survey_weather_0)[which(names(survey_weather_0) == "year")] <- "year_0"
+names(survey_weather_0)[2:73] <- paste0(names(survey_weather_0)[2:73], "_year_0")
 
-bbs3$year <- as.integer(as.vector(stringr::str_extract(bbs3$variable, stringr::regex("(?<![0-9])[0-9]{4}(?![0-9])"))))
+lag_weather <- dplyr::inner_join(lag_weather, survey_weather_0, by = c("routeID", "year_0"))
 
-dummy <- bbs3$variable
-for(i in unique(bbs3$year)){
-  dummy <- gsub(as.character(i), "", dummy)
-}
+# year_1 data
+survey_weather_1 <- survey_weather[ , c(6, 58:130)]
+names(survey_weather_1)[which(names(survey_weather_1) == "year")] <- "year_1"
+names(survey_weather_1)[2:73] <- paste0(names(survey_weather_1)[2:73], "_year_1")
 
-bbs3$month <- as.integer(as.vector(stringr::str_extract_all(dummy, stringr::regex("[0-9]+"))))
+lag_weather <- dplyr::inner_join(lag_weather, survey_weather_1, by = c("routeID", "year_1"))
 
-bbs3$june_aug_precip <- 0
-bbs3$june_aug_precip[grep("mean_june_aug_precip", bbs3$variable)] <- 1
-bbs3$july_april_precip <- 0
-bbs3$july_april_precip[grep("mean_july_april", bbs3$variable)] <- 1
+# year_2 data
+survey_weather_2 <- survey_weather[ , c(6, 58:130)]
+names(survey_weather_2)[which(names(survey_weather_2) == "year")] <- "year_2"
+names(survey_weather_2)[2:73] <- paste0(names(survey_weather_2)[2:73], "_year_2")
 
-#write.csv(lag_weather, file = "lag1_weather.csv")
+lag_weather <- dplyr::inner_join(lag_weather, survey_weather_2, by = c("routeID", "year_2"))
+
+save(lag_weather, file = "lag_weather.Rdata")
+write.csv(lag_weather, file = "lag_weather.csv")
 
 
 #### Read in the weather data to transform it ----------------------------------------------------------------------------
-setwd("C:/Users/Tingley Lab_2/Dropbox/BBS_Project") # Lab 2 Computer directory
-
 ## Load in the data
 
 lag_and_weather <- read.csv("./BBS_Data/lag1_weather.csv", header = TRUE)
