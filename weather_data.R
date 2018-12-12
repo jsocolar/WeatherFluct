@@ -209,7 +209,7 @@ load("survey_weather.Rdata")
 # read in the lag data
 lag_1 <- read.csv("BBS_Data/lag1_80to16_data.csv")
 lag_1 <- lag_1[,-1] #remove that first column of nothing
-lag_1 <- lag_1[(lag_1$year_1 > 1979),] #Make it so it is only from 1980-2016
+lag_1 <- lag_1[(lag_1$year_1 > 1979),] # Restrict to years 1980-2016
 
 ## Remove the bad birds
 bird_species <- read.csv("BBS_Data/SpeciesList.csv")
@@ -236,7 +236,7 @@ survey_weather_averages <- survey_weather[1:5651 , 6:55]
 lag_weather <- dplyr::inner_join(lag_1, survey_weather_averages, by = "routeID")
 
 # We append the year_0 data
-lag_1$year_0 <- lag_1$year_1 - 1
+lag_weather$year_0 <- lag_weather$year_1 - 1
 survey_weather_0 <- survey_weather[ , c(6, 58:130)]
 names(survey_weather_0)[which(names(survey_weather_0) == "year")] <- "year_0"
 names(survey_weather_0)[2:73] <- paste0(names(survey_weather_0)[2:73], "_year_0")
