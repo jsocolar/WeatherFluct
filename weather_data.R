@@ -1,32 +1,27 @@
-# Written to run on Picoides
 # This script: 
 # 1) Downloads and unzips the Route file distributed by the BBS ftp site
 # 2) Downloads and imports Daymet weather data from 1980 to 2015 at each BBS route.
 
 #### Directories and packages ####
-setwd("/Users/Jacob/Dropbox/Work/BBS_Project/")
+setwd("/Users/Jacob/Dropbox/Work/BBS_Project/") #Jacob's laptop
+#setwd("/Users/JacobSocolar/Dropbox/Work/BBS_Project/") #Jacob's Minnesota desktop
 #setwd("C:/Users/Tingley Lab_2/Dropbox/BBS_Project") #Austin's lab computer
+
 '%ni%' <- Negate('%in%')
 
-#library(FedData)
-
 #### 1) BBS route download ####
-
 #download.file('ftp://ftpext.usgs.gov/pub/er/md/laurel/BBS/DataFiles/Routes.zip', 
 #              destfile = 'BBS_Data/BBS_routes.zip')   # Run on 20 March 2018
 #unzip('BBS_Data/BBS_routes.zip')
-
 #BBS_routes <- read.csv('BBS_Data/routes.csv')
-
 ## Create SpatialPoints structure
 #BBS_routes_sp <- sp::SpatialPointsDataFrame(BBS_routes[,6:7], BBS_routes[,-c(6,7)], proj4string = sp::CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5 +lon_0=-96 +x_0=0 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs"))
 
 #### 2) Download and read in Daymet data ####
-
+## Option 1, using package FedData, would give the full Daymet polygon as a giant rasterbrick. 
 # FedData::get_daymet(BBS_routes_sp, BBS_area, elements = c("prcp", "swe", "tmax", "tmin"), raw.dir = "/Users/TingleyLab/Desktop/useful_datasets/Daymet/RAW/, extraction.dir = "/Users/TingleyLab/Desktop/useful_datasets/Daymet/EXTRACTIONS/")
-## The above would give the full Daymet polygon as a rasterbrick.  Below-is a hard-coded work-around based
-## on an online single-pixel extraction tool:
-
+## Option 2: because the rasterbrick would be so huge an unwieldy, we implement a workaround
+## based on an online single-pixel extraction tool:
 #npts <- dim(BBS_routes_sp)[1]
 #for(i in 1:npts){
 #  tryCatch(download.file(url=paste("https://daymet.ornl.gov/single-pixel/send/send/saveData?lat=",
@@ -76,7 +71,6 @@ setwd("/Users/Jacob/Dropbox/Work/BBS_Project/")
 #save(BBS_routes_sp, file = 'BBS_routes_sp.Rdata')
 
 #### 3) Extract example temperature summaries for BBS locations ####
-
 load('BBS_routes_sp.Rdata')
 
 # Unique Route ID
@@ -101,7 +95,6 @@ for(i in 1:12){
 
 # Populate BBS_routes_sp with appropriate data:
 wdata <- list.files("Daymet")
-
 wd_list <- list() # Store all the imported weather csv files in a list, so we don't have to
                   # re-import later
 for(i in 1:dim(BBS_routes_sp)[1]){
@@ -201,9 +194,7 @@ for(i in 1:dim(BBS_routes_sp)[1]){
 survey_weather <- dplyr::bind_rows(df.list)
 save(survey_weather, file = "survey_weather.Rdata")
 
-# The alternative precip measures can be easily derived from the monthly summaries.
-
-## Combine with the lag data and create a new data document to move forward with
+## Combine with the lag data and create a new data object
 load("survey_weather.Rdata")
 
 # read in the lag data
@@ -260,78 +251,41 @@ lag_weather <- dplyr::inner_join(lag_weather, survey_weather_2, by = c("routeID"
 save(lag_weather, file = "BBS_Data/lag_weather.Rdata")
 write.csv(lag_weather, file = "BBS_Data/lag_weather.csv")
 
+#### Z-score calculation:
+# The z-scores represent whether a route is near the center or near the edge of a species range
+# for a particular weather variable. They can be calculated only for species that are detected
+# on a sufficient number of unique routes. Data exploration to determine a good minimum number of
+# routes for a cut-off:
+lag_weather <- read.csv("BBS_Data/lag_weather.csv", header = TRUE)
 
-#### Read in the weather data to transform it ----------------------------------------------------------------------------
-## Load in the data
+route_numbers <- doBy::summaryBy(routeID ~ AOU, FUN=length, data=lag_weather)
+hist(route_numbers$routeID.length[which(route_numbers$routeID.length < 200)])
+z_score_species <- route_numbers$AOU[which(route_numbers$routeID.length > 69)]
 
-lag_and_weather <- read.csv("BBS_Data/lag_weather.csv", header = TRUE)
-
-# Pull out just the count data
-lag <- lag_and_weather[,c(2:10, 21:25)]
-#colnames(lag)[11] <- "site_meanmaxESu"
-#colnames(lag)[12] <- "site_meanminESu"
-#colnames(lag)[13] <- "site_meanESuPrecip"
-#colnames(lag)[14] <- "site_meanESuSWE"
-
-
-
-#### Add in only the weather data from the year of year1
-
-#### For loop getting the weather from Year 1 in one loop
-
-n <- dim(lag)[1]
-
-lag2 <- lag_and_weather
-
-a <- Sys.time()
-lag2$mean_high_ESu <- lag2[cbind(c(1:n),26+6*(lag2$year1-1980))]
-lag2$max_high_ESu <- lag2[cbind(c(1:n),27+6*(lag2$year1-1980))]
-lag2$mean_low_ESu <- lag2[cbind(c(1:n),28+6*(lag2$year1-1980))]
-lag2$min_low_ESu <- lag2[cbind(c(1:n),29+6*(lag2$year1-1980))]
-lag2$mean_ESu_Precip <- lag2[cbind(c(1:n),30+6*(lag2$year1-1980))]
-lag2$mean_ESu_SWE <- lag2[cbind(c(1:n),31+6*(lag2$year1-1980))]
-elapsed <- Sys.time() - a
-lag <- lag2
-
-## Get the mean temperature across all sites the bird is in 
-species_list <- unique(lag$aou)
-lag$SP_meanmaxESu <- rep(NA,n)
-lag$SP_meanminESu <- rep(NA,n)
-lag$SP_meanESuPrecip <- rep(NA,n)
-lag$SP_meanESuSWE <- rep(NA,n)
-
-lag$SP_sdmaxESu <- rep(NA,n)
-lag$SP_sdminESu <- rep(NA,n)
-lag$SP_sdESuPrecip <- rep(NA,n)
-lag$SP_sdESuSWE <- rep(NA,n)
-
-for(i in 1:length(species_list)){
-  print(i)
-  lag_SP <- lag[which(lag$aou == species_list[i]), ]
-  one_route <- lag_SP[!duplicated(lag_SP$route_ID),]
-  
-  lag$SP_meanmaxESu[which(lag$aou == species_list[i])] <- mean(one_route$overall_meanmaxESu)
-  lag$SP_meanminESu[which(lag$aou == species_list[i])] <- mean(one_route$overall_meanminESu)
-  lag$SP_meanESuPrecip[which(lag$aou == species_list[i])] <- mean(one_route$overall_meanESuPrecip)
-  lag$SP_meanESuSWE[which(lag$aou == species_list[i])] <- mean(one_route$overall_meanESuSWE)
-  
-  lag$SP_sdmaxESu[which(lag$aou == species_list[i])] <- sd(one_route$overall_meanmaxESu)
-  lag$SP_sdminESu[which(lag$aou == species_list[i])] <- sd(one_route$overall_meanminESu)
-  lag$SP_sdESuPrecip[which(lag$aou == species_list[i])] <- sd(one_route$overall_meanESuPrecip)
-  lag$SP_sdESuSWE[which(lag$aou == species_list[i])] <- sd(one_route$overall_meanESuSWE)
+# A function that takes a column name, a list of species for which z-scores are desired,
+# and a lag_weather dataframe as input, and gives as output a lag_weather dataframe with a 
+# column of z-scores appended, giving the z-score for the desired species and NA elsewhere
+# Repeated application of lag_weather <- zsc(lag_weather, column_name) for the desired column
+# names will give the desired final output
+zsc <- function(lag_weather, column_name, z_score_species){
+  oldcol <- which(names(lag_weather) == column_name)
+  newcol <- rep(NA, nrow(lag_weather))
+  for(i in z_score_species){
+    lag_SP <- lag_weather[which(lag_weather$aou == i), ]
+    unique_routes <- lag_SP[!duplicated(lag_SP$routeID),]
+    unique_routes$zscores <- scale(unique_routes[, oldcol])
+    for(j in unique_routes$routeID){
+      newcol[lag_weather$routeID == j & lag_weather$aou == i] <- unique_routes$zscores[unique_routes$routeID == j]
+    }
+  }
+  lag_weather <- cbind(lag_weather, newcol)
+  names(lag_weather)[ncol(lag_weather)] <- paste0(column_name, "_zscore")
+  return(lag_weather)
 }
 
+# Below is an example to compute z-scores for March average daily high temps. 
+# WARNING: running this will take a while!
+test <- zsc(lag_weather, "mean_high_3", z_score_species)
 
-#### Get a z score for the average site temp away from average sp temp
-######### Just do the Z-score in January and June (not every month)
-######### Precip and SWE in winter perhaps, although think about where this matters
-######### Find precipitation measure that matters for productivity
-lag$Z_meanmaxESu <- (lag$overall_meanmaxESu - lag$SP_meanmaxESu)/ lag$SP_sdmaxESu
-lag$Z_meanminESu <- (lag$overall_meanminESu - lag$overall_meanminESu)/ lag$SP_sdminESu
-lag$Z_meanESuPrecip <- (lag$overall_meanESuPrecip - lag$overall_meanESuPrecip)/ lag$SP_sdESuPrecip
-lag$Z_meanESuSWE <- (lag$overall_meanESuSWE - lag$overall_meanESuSWE)/ lag$SP_sdESuSWE
-
-
-write.csv(lag, file = "97_16_bbs_weather.csv")
 
 
