@@ -265,8 +265,8 @@ z_score_species <- route_numbers$AOU[which(route_numbers$routeID.length > 69)]
 # A function that takes a column name, a list of species for which z-scores are desired,
 # and a lag_weather dataframe as input, and gives as output a lag_weather dataframe with a 
 # column of z-scores appended, giving the z-score for the desired species and NA elsewhere
-# Repeated application of lag_weather <- zsc(lag_weather, column_name) for the desired column
-# names will give the desired final output
+# Repeated application of lag_weather <- zsc(lag_weather, column_name, z_score_species) for the 
+# desired columns will give the desired final output
 zsc <- function(lag_weather, column_name, z_score_species){
   oldcol <- which(names(lag_weather) == column_name)
   newcol <- rep(NA, nrow(lag_weather))
@@ -286,6 +286,3 @@ zsc <- function(lag_weather, column_name, z_score_species){
 # Below is an example to compute z-scores for March average daily high temps. 
 # WARNING: running this will take a while!
 test <- zsc(lag_weather, "mean_high_3", z_score_species)
-
-
-
