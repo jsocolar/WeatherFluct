@@ -13,10 +13,7 @@ nestdates$date <- as.Date(substr(nestdates$FIRST_LAY_DT,1,9),format="%d%B%Y")
 nestdates$year <- NA
 nestdates$jday <- NA
 
-# get jday and year.  The below is fast simple code based on the lubridate package;
-# however I don't have lubridate installed and I have no internet in Colombia, so below
-# that is a much clunkier and slower base R solution.
-
+# get jday and year.  
 nestdates$jday <- lubridate::yday(nestdates$date)
 nestdates$year <- lubridate::year(nestdates$date)
 
@@ -28,7 +25,7 @@ ndf <- ndf[-which(ndf$SUBNATIONAL1_CODE == "US-NY" & ndf$ELEVATION_M > 1500), ]
 # Model nest date using a GAM with a 2D tensor smooth for lat/lon, and a 1D smooth for elevation.
 # Default selection of smooth terms
 # I don't fully understand the bs = "re" argument, but documentation assures me that this produces
-# and IID Gaussian random effect of SPECIES_CODE
+# an IID Gaussian random effect of SPECIES_CODE
 nest_model <- mgcv::gam(jday ~ s(ELEVATION_M) + t2(LONGITUDE, LATITUDE) + s(SPECIES_CODE, bs = "re"), data = ndf)
 
 summary(nest_model)
