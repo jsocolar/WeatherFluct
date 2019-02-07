@@ -17,12 +17,8 @@ nestdates$jday <- NA
 # however I don't have lubridate installed and I have no internet in Colombia, so below
 # that is a much clunkier and slower base R solution.
 
-#nestdates$jday <- lubridate::julian(nestdates$date, origin = paste0(strsplitnestdates$date))
-#nestdates$year <- lubridate::year(nestdates$date)
-for(i in 1:nrow(nestdates)){
-  nestdates$year[i] <- strsplit(as.character(nestdates$date[i]), "-")[[1]][1]
-  nestdates$jday[i] <- julian(nestdates$date[i], origin = as.Date(paste0(nestdates$year[i], "-01-01")))
-}
+nestdates$jday <- lubridate::yday(nestdates$date)
+nestdates$year <- lubridate::year(nestdates$date)
 
 # Trim to a reasonable geographic area, and remove some nests where the elevation is obviously
 # erroneous
@@ -30,10 +26,14 @@ ndf <- nestdates[nestdates$LONGITUDE < -50  & nestdates$LATITUDE < 70 & nestdate
 ndf <- ndf[-which(ndf$SUBNATIONAL1_CODE == "US-NY" & ndf$ELEVATION_M > 1500), ]
 
 # Model nest date using a GAM with a 2D tensor smooth for lat/lon, and a 1D smooth for elevation.
-# mgcv::gam defaults to select degrees of freedom
-nest_model <- gamm4::gam4(jday ~ (1|SPECIES_CODE) + s(ELEVATION_M) + t2(LONGITUDE, LATITUDE), data = ndf)
+# Default selection of smooth terms
+# I don't fully understand the bs = "re" argument, but documentation assures me that this produces
+# and IID Gaussian random effect of SPECIES_CODE
+nest_model <- mgcv::gam(jday ~ s(ELEVATION_M) + t2(LONGITUDE, LATITUDE) + s(SPECIES_CODE, bs = "re"), data = ndf)
+
 summary(nest_model)
 plot(nest_model, scheme = 2)
+plot(nest_model, scheme = 2, select = 2)
 points(nestdates$LATITUDE ~ nestdates$LONGITUDE, pch = '.')
 
 save(nest_model, file = "nest_model.Rdata")
@@ -62,7 +62,30 @@ lag_weather <- lag_weather[-which(lag_weather$w_elev > 4000), ]
 # predict nest_model at locations of BBS routes, and store result in lag_weather
 # Note that nest_model's intercept is for acadian flycatcher.  We want an intercept for the 
 # average species in the dataset.
-intercept.offset <- weighted.mean(c(0, nest_model$coefficients[2:208]), w = summary(nest_model)$se[1:208]^(-1))
+
+# We will do our prediction for Acadian Flycatcher, and then subtract the random effect estimate
+# for Acadian Flycatcher from the resulting predictions, yielding a prediction for an "average"
+# species. I don't know what the slick way to extract this estimate is, but the below should
+# do the trick, taking advantage of the fact that the mean of the BLUPS should be 0.
+# ***Need to double-confirm that this definitley works***
+
+species <- unique(ndf$SPECIES_CODE)
+species <- species[-which(is.na(species))]
+avg_pred <- rep(NA, length(species))
+for(i in 1:length(species)){
+  p_data <- data.frame(SPECIES_CODE = species[i], ELEVATION_M = mean(ndf$ELEVATION_M, na.rm = T),
+                       LATITUDE = mean(ndf$LATITUDE, na.rm = T),
+                       LONGITUDE = mean(ndf$LONGITUDE, na.rm = T))
+  avg_pred[i] <- mgcv::predict.gam(nest_model, newdata = p_data)
+}
+
+intercept.offset <- mean(avg_pred, ) - avg_pred[1]
+
+# Now do the prediction
 predict.data <- data.frame(SPECIES_CODE = "acafly", ELEVATION_M = lag_weather$w_elev,
                            LONGITUDE = lag_weather$Longitude, LATITUDE = lag_weather$Latitude)
 lag_weather$pred_nest_jday <- as.vector(mgcv::predict.gam(nest_model, newdata = predict.data)) + intercept.offset
+
+lag_weather_n <- lag_weather
+
+save(lag_weather_n, file = "BBS_Data/lag_weather_n.Rdata")
