@@ -207,3 +207,65 @@ save(survey_breeding_weather, file = "survey_breeding_weather.Rdata")
 
 #######################
 
+## Combine this with the weather data with the lag data
+load("survey_breeding_weather.Rdata")
+
+# read in the lag data to combine it with the breeding weather data
+lag_1 <- read.csv("./BBS_Data/lag1_80to16_data.csv")
+lag_1 <- lag_1[,-1] #remove that first column of nothing
+lag_1 <- lag_1[(lag_1$year_1 > 1979),] # Restrict to years 1980-2016
+
+## Remove the bad birds (although this still includes passerines)
+bird_species <- read.csv("BBS_Data/SpeciesList.csv")
+good_birds <- bird_species[which(rowSums(bird_species[,c(8:13, 16, 19)], na.rm = T) == 0), ]
+good_birds$aou <- good_birds$AOU
+
+lag_1 <- lag_1[which(lag_1$aou %in% good_birds$AOU), ]
+lag_1 <- dplyr::inner_join(lag_1, good_birds, by = "aou")
+
+
+# Combine it with the survey_breeding_weather
+# For most variables:
+# The months July through December of year Y matter for lags with Y == year_1
+# The months January through May of year Y matter for lags with Y == year_2
+# June can matter in both years.
+# For species whose breeding productivity is affected precipitation in the previous 
+#   fall/winter/spring, the year that matters is Y == year_1 for January through May,
+#   and Y == year_1 - 1 for July through December.
+
+# So what we're going to do for now is add on rows to lag_1 giving the year_2 values for each 
+# breeding date, the year_1 values for each breeding date, and the year_1 - 1 values for each breeding date
+
+# For the cross-year averages, we don't need to keep track of year.
+survey_breeding_weather_averages <- survey_breeding_weather[1:5651 , 6:263] 
+lag_breeding_weather <- dplyr::inner_join(lag_1, survey_breeding_weather_averages, by = "routeID")
+
+
+# We append the year_0 data
+lag_breeding_weather$year_0 <- lag_breeding_weather$year_1 - 1
+survey_breeding_weather_0 <- survey_breeding_weather[ , c(6, 522:906)] 
+names(survey_breeding_weather_0)[which(names(survey_breeding_weather_0) == "year")] <- "year_0"
+names(survey_breeding_weather_0)[2:385] <- paste0(names(survey_breeding_weather_0)[2:385], "_year_0")
+
+lag_breeding_weather <- dplyr::inner_join(lag_breeding_weather, survey_breeding_weather_0, by = c("routeID", "year_0"))
+
+# year_1 data
+survey_breeding_weather_1 <- survey_breeding_weather[ , c(6, 522:906)] 
+names(survey_breeding_weather_1)[which(names(survey_breeding_weather_1) == "year")] <- "year_1"
+names(survey_breeding_weather_1)[2:385] <- paste0(names(survey_breeding_weather_1)[2:385], "_year_1") 
+
+lag_breeding_weather <- dplyr::inner_join(lag_breeding_weather, survey_breeding_weather_1, by = c("routeID", "year_1"))
+
+# year_2 data
+survey_breeding_weather_2 <- survey_breeding_weather[ , c(6, 522:906)] 
+names(survey_breeding_weather_2)[which(names(survey_breeding_weather_2) == "year")] <- "year_2"
+names(survey_breeding_weather_2)[2:385] <- paste0(names(survey_breeding_weather_2)[2:385], "_year_2") 
+
+lag_breeding_weather <- dplyr::inner_join(lag_breeding_weather, survey_breeding_weather_2, by = c("routeID", "year_2"))
+
+save(lag_breeding_weather, file = "lag_breeding_weather.Rdata")
+write.csv(lag_breeding_weather, file = "lag_breeding_weather.csv")
+
+#################################################################################################################################
+# Done 
+#################################################################################################################################
