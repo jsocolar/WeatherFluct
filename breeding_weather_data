@@ -269,3 +269,26 @@ write.csv(lag_breeding_weather, file = "lag_breeding_weather.csv")
 #################################################################################################################################
 # Done 
 #################################################################################################################################
+
+setwd("C:/Users/Tingley Lab_2/Dropbox/BBS_Project") #Austin's lab computer
+
+load("lag_breeding_weather.RData") # this has the breeding weather data
+load("./BBS_Data/lag_weather_n.RData") # This has the month weather data and the predicted jday
+
+### change the month names from 1-12 to jan-dec in the lag_weather_n file
+
+colname <- names(lag_weather_n)
+colname[44:91] <- c("mean_high_jan","mean_low_jan", "mean_precip_jan", "mean_swe_jan",
+                                          "mean_high_feb","mean_low_feb", "mean_precip_feb", "mean_swe_feb",
+                                          "mean_high_mar","mean_low_mar", "mean_precip_mar", "mean_swe_mar",
+                                          "mean_high_apr","mean_low_apr", "mean_precip_apr", "mean_swe_apr",
+                                          "mean_high_may","mean_low_may", "mean_precip_may", "mean_swe_may",
+                                          "mean_high_jun","mean_low_jun", "mean_precip_jun", "mean_swe_jun",
+                                          "mean_high_jul","mean_low_jul", "mean_precip_jul", "mean_swe_jul",
+                                          "mean_high_aug","mean_low_aug", "mean_precip_aug", "mean_swe_aug",
+                                          "mean_high_sep","mean_low_sep", "mean_precip_sep", "mean_swe_sep",
+                                          "mean_high_oct","mean_low_oct", "mean_precip_oct", "mean_swe_oct",
+                                          "mean_high_nov","mean_low_nov", "mean_precip_nov", "mean_swe_nov",
+                                          "mean_high_dec","mean_low_dec", "mean_precip_dec", "mean_swe_dec")
+
+colnames(lag_weather_n) <- colname
