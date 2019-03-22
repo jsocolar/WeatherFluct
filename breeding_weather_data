@@ -310,3 +310,22 @@ jdays$jday_order <- c(1:64)
 
 lag_weather_n <- dplyr::inner_join(lag_weather_n, jdays, by = "pred_nest_jday") # Jday order is the ordinal number for lay date (86 was the first lay date so it gets 1, 204 was last so it is 64)
 
+
+# Figure out how to add them together without doubling up stuff (currently by doing it by all the other variables - clearly not the best way)
+
+both_weather_datasets <- dplyr::inner_join(lag_breeding_weather, lag_weather_n, by = c("year_1", "aou", "n1_total", "routeID", 
+                                                                               "observer_1", "start_time_1", "end_time_1", "julian_date_1",
+                                                                               "final_temp_1", "year_2", "n2_total", "observer_2",
+                                                                               "start_time_2", "end_time_2", "julian_date_2", "final_temp_2", 
+                                                                               "lag", "r_star", "observer_check", "day_check", 
+                                                                               "time_check", "time_check2", "temp_difference", "Seq", 
+                                                                               "AOU", "English_Common_Name", "ORDER", "Family", 
+                                                                               "Genus", "Species", "Difficult.to.ID.", "Food.from.ocean.",
+                                                                               "Breed.on.beach.", "Breed.in.saltmarsh.", "Breed.on.tundra.", "Mexican.southern.range.", 
+                                                                               "Neotropical.migrant.", "Short.distance.migrant", "Alt..problem.", "Notes",
+                                                                               "year_0", "year_2"))
+
+
+
+
+
