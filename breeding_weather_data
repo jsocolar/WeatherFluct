@@ -82,9 +82,16 @@ for(i in 1:dim(BBS_routes_sp)[1]){
   # Averages across years during the predicted breeding dates
   for(j in 1:64){
     eval(parse(text = paste0("BBS_routes_sp$mean_breeding_high_",j,"[",i,"] <- mean(wd_",j,"$tmax..deg.c)"))) #site mean high for breeding time
+    eval(parse(text = paste0("BBS_routes_sp$sd_breeding_high_",j,"[",i,"] <- sd(wd_",j,"$tmax..deg.c)"))) #site sd high for breeding time
+    
     eval(parse(text = paste0("BBS_routes_sp$mean_breeding_low_",j,"[",i,"] <- mean(wd_",j,"$tmin..deg.c)"))) #site mean min for breeding time
+    eval(parse(text = paste0("BBS_routes_sp$sd_breeding_low_",j,"[",i,"] <- sd(wd_",j,"$tmin..deg.c)"))) #site sd min for breeding time
+    
     eval(parse(text = paste0("BBS_routes_sp$mean_breeding_precip_",j,"[",i,"] <- mean(wd_",j,"$prcp..mm.day.)"))) #site mean precip for breeding time
+    eval(parse(text = paste0("BBS_routes_sp$sd_breeding_precip_",j,"[",i,"] <- sd(wd_",j,"$prcp..mm.day.)"))) #site sd precip for breeding time
+    
     eval(parse(text = paste0("BBS_routes_sp$mean_breeding_swe_",j,"[",i,"] <- mean(wd_",j,"$swe..kg.m.2)"))) #site mean swe for breeding time
+    eval(parse(text = paste0("BBS_routes_sp$sd_breeding_swe_",j,"[",i,"] <- sd(wd_",j,"$swe..kg.m.2)"))) #site sd swe for breeding time
   }
   print(i)
 }
