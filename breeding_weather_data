@@ -6,7 +6,13 @@ setwd("C:/Users/Tingley Lab_2/Dropbox/BBS_Project") #Tingley lab computer
 
 # load in the weather data
 
+load("BBS_routes_sp.Rdata")
 load("wd_list.Rdata")
+
+## Make the route ID and delete some unimportant info
+BBS_routes_sp$routeID <- rep(NA, dim(BBS_routes_sp)[1])
+BBS_routes_sp$routeID <- paste(BBS_routes_sp$countrynum, BBS_routes_sp$statenum, BBS_routes_sp$Route, sep=".")
+BBS_routes_sp <- BBS_routes_sp[ , -c(1:5)]
 
 # Pull the weather data for each unique breeding day found from Jacob's projected breeding date code 
 # based on latitude and elevation - include up to 45 days out from the start of that breeding date.
