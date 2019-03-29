@@ -345,15 +345,23 @@ both_weather_datasets <- dplyr::inner_join(lag_breeding_weather, lag_weather_n, 
 # predicted lay date. 
 
 # First take out the the monthly means and year 0,1,2 for those (we want to keep them) 
-breeding_and_month_weather <- both_weather_datasets[c(1:43, 300, 1456:1723)]
+breeding_and_month_weather <- both_weather_datasets[c(1:42, 555, 1710:1978)]
 
 # Get the breeding specific means across all years for that specific lay date
 ptm <- proc.time()
-breeding_and_month_weather$breeding_mean_high <- eval(parse(text = paste0("both_weather_datasets$mean_high_",both_weather_datasets$jday_order)))
-breeding_and_month_weather$breeding_mean_low <- eval(parse(text = paste0("both_weather_datasets$mean_low_",both_weather_datasets$jday_order)))
-breeding_and_month_weather$breeding_mean_precip <- eval(parse(text = paste0("both_weather_datasets$mean_precip_",both_weather_datasets$jday_order)))
-breeding_and_month_weather$breeding_mean_swe <- eval(parse(text = paste0("both_weather_datasets$mean_swe_",both_weather_datasets$jday_order)))
-  
+breeding_and_month_weather$breeding_mean_high <- eval(parse(text = paste0("both_weather_datasets$mean_breeding_high_",both_weather_datasets$jday_order)))
+breeding_and_month_weather$breeding_sd_high <- eval(parse(text = paste0("both_weather_datasets$sd_breeding_high_",both_weather_datasets$jday_order)))
+
+breeding_and_month_weather$breeding_mean_low <- eval(parse(text = paste0("both_weather_datasets$mean_breeding_low_",both_weather_datasets$jday_order)))
+breeding_and_month_weather$breeding_sd_low <- eval(parse(text = paste0("both_weather_datasets$sd_breeding_low_",both_weather_datasets$jday_order)))
+
+breeding_and_month_weather$breeding_mean_precip <- eval(parse(text = paste0("both_weather_datasets$mean_breeding_precip_",both_weather_datasets$jday_order)))
+breeding_and_month_weather$breeding_sd_precip <- eval(parse(text = paste0("both_weather_datasets$sd_breeding_precip_",both_weather_datasets$jday_order)))
+
+breeding_and_month_weather$breeding_mean_swe <- eval(parse(text = paste0("both_weather_datasets$mean_breeding_swe_",both_weather_datasets$jday_order)))
+breeding_and_month_weather$breeding_sd_swe <- eval(parse(text = paste0("both_weather_datasets$sd_breeding_swe_",both_weather_datasets$jday_order)))
+
+
 # Get the breeding specific weather variables for the specific year for that specific lay date
 breeding_and_month_weather$breeding_avg_high_year_0 <- eval(parse(text = paste0("both_weather_datasets$breeding_avg_high_",both_weather_datasets$jday_order,"_year_0")))
 breeding_and_month_weather$breeding_max_high_year_0 <- eval(parse(text = paste0("both_weather_datasets$breeding_max_high_",both_weather_datasets$jday_order,"_year_0")))
