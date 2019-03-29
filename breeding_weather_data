@@ -250,27 +250,27 @@ lag_1 <- dplyr::inner_join(lag_1, good_birds, by = "aou")
 # breeding date, the year_1 values for each breeding date, and the year_1 - 1 values for each breeding date
 
 # For the cross-year averages, we don't need to keep track of year.
-survey_breeding_weather_averages <- survey_breeding_weather[1:5651 , 6:263] 
-lag_breeding_weather <- dplyr::inner_join(lag_1, survey_breeding_weather_averages, by = "routeID")
+survey_breeding_weather_means_sds <- survey_breeding_weather[1:5651 , 6:518]
+lag_breeding_weather <- dplyr::inner_join(lag_1, survey_breeding_weather_means_sds, by = "routeID")
 
 
 # We append the year_0 data
 lag_breeding_weather$year_0 <- lag_breeding_weather$year_1 - 1
-survey_breeding_weather_0 <- survey_breeding_weather[ , c(6, 522:906)] 
+survey_breeding_weather_0 <- survey_breeding_weather[ , c(6, 521:905)]
 names(survey_breeding_weather_0)[which(names(survey_breeding_weather_0) == "year")] <- "year_0"
 names(survey_breeding_weather_0)[2:385] <- paste0(names(survey_breeding_weather_0)[2:385], "_year_0")
 
 lag_breeding_weather <- dplyr::inner_join(lag_breeding_weather, survey_breeding_weather_0, by = c("routeID", "year_0"))
 
 # year_1 data
-survey_breeding_weather_1 <- survey_breeding_weather[ , c(6, 522:906)] 
+survey_breeding_weather_1 <- survey_breeding_weather[ , c(6, 521:905)]
 names(survey_breeding_weather_1)[which(names(survey_breeding_weather_1) == "year")] <- "year_1"
 names(survey_breeding_weather_1)[2:385] <- paste0(names(survey_breeding_weather_1)[2:385], "_year_1") 
 
 lag_breeding_weather <- dplyr::inner_join(lag_breeding_weather, survey_breeding_weather_1, by = c("routeID", "year_1"))
 
 # year_2 data
-survey_breeding_weather_2 <- survey_breeding_weather[ , c(6, 522:906)] 
+survey_breeding_weather_2 <- survey_breeding_weather[ , c(6, 521:905)] 
 names(survey_breeding_weather_2)[which(names(survey_breeding_weather_2) == "year")] <- "year_2"
 names(survey_breeding_weather_2)[2:385] <- paste0(names(survey_breeding_weather_2)[2:385], "_year_2") 
 
@@ -278,6 +278,7 @@ lag_breeding_weather <- dplyr::inner_join(lag_breeding_weather, survey_breeding_
 
 save(lag_breeding_weather, file = "lag_breeding_weather.Rdata")
 write.csv(lag_breeding_weather, file = "lag_breeding_weather.csv")
+
 
 #################################################################################################################################
 # Done 
