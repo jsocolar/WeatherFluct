@@ -349,41 +349,44 @@ breeding_and_month_weather <- both_weather_datasets[c(1:42, 555, 1710:1978)]
 
 # Get the breeding specific means across all years for that specific lay date
 ptm <- proc.time()
-breeding_and_month_weather$breeding_mean_high <- eval(parse(text = paste0("both_weather_datasets$mean_breeding_high_",both_weather_datasets$jday_order)))
-breeding_and_month_weather$breeding_sd_high <- eval(parse(text = paste0("both_weather_datasets$sd_breeding_high_",both_weather_datasets$jday_order)))
+for(i in 1:length(breeding_and_month_weather[[1]])){
 
-breeding_and_month_weather$breeding_mean_low <- eval(parse(text = paste0("both_weather_datasets$mean_breeding_low_",both_weather_datasets$jday_order)))
-breeding_and_month_weather$breeding_sd_low <- eval(parse(text = paste0("both_weather_datasets$sd_breeding_low_",both_weather_datasets$jday_order)))
+breeding_and_month_weather[i,"breeding_mean_high"] <- eval(parse(text = paste0("both_weather_datasets[",i,",'mean_breeding_high_",both_weather_datasets[i,1978],"']")))
+breeding_and_month_weather[i,"breeding_sd_high"] <- eval(parse(text = paste0("both_weather_datasets[",i,",'sd_breeding_high_",both_weather_datasets[i,1978],"']")))
 
-breeding_and_month_weather$breeding_mean_precip <- eval(parse(text = paste0("both_weather_datasets$mean_breeding_precip_",both_weather_datasets$jday_order)))
-breeding_and_month_weather$breeding_sd_precip <- eval(parse(text = paste0("both_weather_datasets$sd_breeding_precip_",both_weather_datasets$jday_order)))
+breeding_and_month_weather[i,"breeding_mean_low"] <- eval(parse(text = paste0("both_weather_datasets[",i,",'mean_breeding_low_",both_weather_datasets[i,1978],"']")))
+breeding_and_month_weather[i,"breeding_sd_low"] <- eval(parse(text = paste0("both_weather_datasets[",i,",'sd_breeding_low_",both_weather_datasets[i,1978],"']")))
 
-breeding_and_month_weather$breeding_mean_swe <- eval(parse(text = paste0("both_weather_datasets$mean_breeding_swe_",both_weather_datasets$jday_order)))
-breeding_and_month_weather$breeding_sd_swe <- eval(parse(text = paste0("both_weather_datasets$sd_breeding_swe_",both_weather_datasets$jday_order)))
+breeding_and_month_weather[i,"breeding_mean_precip"] <- eval(parse(text = paste0("both_weather_datasets[",i,",'mean_breeding_precip_",both_weather_datasets[i,1978],"']")))
+breeding_and_month_weather[i,"breeding_sd_precip"] <- eval(parse(text = paste0("both_weather_datasets[",i,",'sd_breeding_precip_",both_weather_datasets[i,1978],"']")))
 
+breeding_and_month_weather[i,"breeding_mean_swe"] <- eval(parse(text = paste0("both_weather_datasets[",i,",'mean_breeding_swe_",both_weather_datasets[i,1978],"']")))
+breeding_and_month_weather[i,"breeding_sd_swe"] <- eval(parse(text = paste0("both_weather_datasets[",i,",'sd_breeding_swe_",both_weather_datasets[i,1978],"']")))
 
 # Get the breeding specific weather variables for the specific year for that specific lay date
-breeding_and_month_weather$breeding_avg_high_year_0 <- eval(parse(text = paste0("both_weather_datasets$breeding_avg_high_",both_weather_datasets$jday_order,"_year_0")))
-breeding_and_month_weather$breeding_max_high_year_0 <- eval(parse(text = paste0("both_weather_datasets$breeding_max_high_",both_weather_datasets$jday_order,"_year_0")))
-breeding_and_month_weather$breeding_avg_low_year_0 <- eval(parse(text = paste0("both_weather_datasets$breeding_avg_low_",both_weather_datasets$jday_order,"_year_0")))
-breeding_and_month_weather$breeding_min_low_year_0 <- eval(parse(text = paste0("both_weather_datasets$breeding_min_low_",both_weather_datasets$jday_order,"_year_0")))
-breeding_and_month_weather$breeding_avg_precip_year_0 <- eval(parse(text = paste0("both_weather_datasets$breeding_avg_precip_",both_weather_datasets$jday_order,"_year_0")))
-breeding_and_month_weather$breeding_avg_swe_year_0 <- eval(parse(text = paste0("both_weather_datasets$breeding_avg_swe_",both_weather_datasets$jday_order,"_year_0")))
+breeding_and_month_weather[i,"breeding_avg_high_year_0"] <- eval(parse(text = paste0("both_weather_datasets[",i,",'breeding_avg_high_",both_weather_datasets[i,1978],"_year_0']")))
+breeding_and_month_weather[i,"breeding_max_high_year_0"] <- eval(parse(text = paste0("both_weather_datasets[",i,",'breeding_max_high_",both_weather_datasets[i,1978],"_year_0']")))
+breeding_and_month_weather[i,"breeding_avg_low_year_0"] <- eval(parse(text = paste0("both_weather_datasets[",i,",'breeding_avg_low_",both_weather_datasets[i,1978],"_year_0']")))
+breeding_and_month_weather[i,"breeding_min_low_year_0"] <- eval(parse(text = paste0("both_weather_datasets[",i,",'breeding_min_low_",both_weather_datasets[i,1978],"_year_0']")))
+breeding_and_month_weather[i,"breeding_avg_precip_year_0"] <- eval(parse(text = paste0("both_weather_datasets[",i,",'breeding_avg_precip_",both_weather_datasets[i,1978],"_year_0']")))
+breeding_and_month_weather[i,"breeding_avg_swe_year_0"] <- eval(parse(text = paste0("both_weather_datasets[",i,",'breeding_avg_swe_",both_weather_datasets[i,1978],"_year_0']")))
 
-breeding_and_month_weather$breeding_avg_high_year_1 <- eval(parse(text = paste0("both_weather_datasets$breeding_avg_high_",both_weather_datasets$jday_order,"_year_1")))
-breeding_and_month_weather$breeding_max_high_year_1 <- eval(parse(text = paste0("both_weather_datasets$breeding_max_high_",both_weather_datasets$jday_order,"_year_1")))
-breeding_and_month_weather$breeding_avg_low_year_1 <- eval(parse(text = paste0("both_weather_datasets$breeding_avg_low_",both_weather_datasets$jday_order,"_year_1")))
-breeding_and_month_weather$breeding_min_low_year_1 <- eval(parse(text = paste0("both_weather_datasets$breeding_min_low_",both_weather_datasets$jday_order,"_year_1")))
-breeding_and_month_weather$breeding_avg_precip_year_1 <- eval(parse(text = paste0("both_weather_datasets$breeding_avg_precip_",both_weather_datasets$jday_order,"_year_1")))
-breeding_and_month_weather$breeding_avg_swe_year_1 <- eval(parse(text = paste0("both_weather_datasets$breeding_avg_swe_",both_weather_datasets$jday_order,"_year_1")))
+breeding_and_month_weather[i,"breeding_avg_high_year_1"] <- eval(parse(text = paste0("both_weather_datasets[",i,",'breeding_avg_high_",both_weather_datasets[i,1978],"_year_1']")))
+breeding_and_month_weather[i,"breeding_max_high_year_1"] <- eval(parse(text = paste0("both_weather_datasets[",i,",'breeding_max_high_",both_weather_datasets[i,1978],"_year_1']")))
+breeding_and_month_weather[i,"breeding_avg_low_year_1"] <- eval(parse(text = paste0("both_weather_datasets[",i,",'breeding_avg_low_",both_weather_datasets[i,1978],"_year_1']")))
+breeding_and_month_weather[i,"breeding_min_low_year_1"] <- eval(parse(text = paste0("both_weather_datasets[",i,",'breeding_min_low_",both_weather_datasets[i,1978],"_year_1']")))
+breeding_and_month_weather[i,"breeding_avg_precip_year_1"] <- eval(parse(text = paste0("both_weather_datasets[",i,",'breeding_avg_precip_",both_weather_datasets[i,1978],"_year_1']")))
+breeding_and_month_weather[i,"breeding_avg_swe_year_1"] <- eval(parse(text = paste0("both_weather_datasets[",i,",'breeding_avg_swe_",both_weather_datasets[i,1978],"_year_1']")))
 
-breeding_and_month_weather$breeding_avg_high_year_2 <- eval(parse(text = paste0("both_weather_datasets$breeding_avg_high_",both_weather_datasets$jday_order,"_year_2")))
-breeding_and_month_weather$breeding_max_high_year_2 <- eval(parse(text = paste0("both_weather_datasets$breeding_max_high_",both_weather_datasets$jday_order,"_year_2")))
-breeding_and_month_weather$breeding_avg_low_year_2 <- eval(parse(text = paste0("both_weather_datasets$breeding_avg_low_",both_weather_datasets$jday_order,"_year_2")))
-breeding_and_month_weather$breeding_min_low_year_2 <- eval(parse(text = paste0("both_weather_datasets$breeding_min_low_",both_weather_datasets$jday_order,"_year_2")))
-breeding_and_month_weather$breeding_avg_precip_year_2 <- eval(parse(text = paste0("both_weather_datasets$breeding_avg_precip_",both_weather_datasets$jday_order,"_year_2")))
-breeding_and_month_weather$breeding_avg_swe_year_2 <- eval(parse(text = paste0("both_weather_datasets$breeding_avg_swe_",both_weather_datasets$jday_order,"_year_2")))
+breeding_and_month_weather[i,"breeding_avg_high_year_2"] <- eval(parse(text = paste0("both_weather_datasets[",i,",'breeding_avg_high_",both_weather_datasets[i,1978],"_year_2']")))
+breeding_and_month_weather[i,"breeding_max_high_year_2"] <- eval(parse(text = paste0("both_weather_datasets[",i,",'breeding_max_high_",both_weather_datasets[i,1978],"_year_2']")))
+breeding_and_month_weather[i,"breeding_avg_low_year_2"] <- eval(parse(text = paste0("both_weather_datasets[",i,",'breeding_avg_low_",both_weather_datasets[i,1978],"_year_2']")))
+breeding_and_month_weather[i,"breeding_min_low_year_2"] <- eval(parse(text = paste0("both_weather_datasets[",i,",'breeding_min_low_",both_weather_datasets[i,1978],"_year_2']")))
+breeding_and_month_weather[i,"breeding_avg_precip_year_2"] <- eval(parse(text = paste0("both_weather_datasets[",i,",'breeding_avg_precip_",both_weather_datasets[i,1978],"_year_2']")))
+breeding_and_month_weather[i,"breeding_avg_swe_year_2"] <- eval(parse(text = paste0("both_weather_datasets[",i,",'breeding_avg_swe_",both_weather_datasets[i,1978],"_year_2']")))
+}
 proc.time() - ptm # This takes about 7 hours...
+
 
 # Create the new data file with both month and breeding date information 
 
