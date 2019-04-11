@@ -385,7 +385,7 @@ breeding_and_month_weather[i,"breeding_min_low_year_2"] <- eval(parse(text = pas
 breeding_and_month_weather[i,"breeding_avg_precip_year_2"] <- eval(parse(text = paste0("both_weather_datasets[",i,",'breeding_avg_precip_",both_weather_datasets[i,1978],"_year_2']")))
 breeding_and_month_weather[i,"breeding_avg_swe_year_2"] <- eval(parse(text = paste0("both_weather_datasets[",i,",'breeding_avg_swe_",both_weather_datasets[i,1978],"_year_2']")))
 }
-proc.time() - ptm # This takes about 7 hours...
+proc.time() - ptm # This takes about 2 hours
 
 
 # Create the new data file with both month and breeding date information 
