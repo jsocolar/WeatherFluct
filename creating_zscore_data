@@ -47,8 +47,8 @@ full_birds$breeding_avg_low_year_1_zscore <- (full_birds$breeding_avg_low_year_1
 full_birds$breeding_avg_precip_year_1_zscore <- (full_birds$breeding_avg_precip_year_1 - full_birds$breeding_mean_precip)/full_birds$breeding_sd_precip # was this specific year an anomoly for mean precip?
 
 
-save(full_birds, file = "BBS_Data/full_birds_dataset")
-write.csv(full_birds, file = "BBS_Data/full_birds_dataset")
+save(full_birds, file = "BBS_Data/full_birds_dataset.Rdata")
+write.csv(full_birds, file = "BBS_Data/full_birds_dataset.csv")
 
 # Limit it to Passerines
 
@@ -58,7 +58,7 @@ passeriformes <- full_birds[which(full_birds$ORDER == "Passeriformes"),]
 passeriformes <- droplevels(passeriformes)
 
 
-save(passeriformes, file = "BBS_Data/passeriformes_dataset")
-write.csv(full_birds, file = "BBS_Data/passeriformes_dataset")
+save(passeriformes, file = "BBS_Data/passeriformes_dataset.Rdata")
+write.csv(full_birds, file = "BBS_Data/passeriformes_dataset.csv")
 
 
