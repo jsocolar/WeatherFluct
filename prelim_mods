@@ -18,8 +18,8 @@ birds <- passeriformes[,c(1:3,10,11,18,26,327,331,339:345)] # simplify dataset
 birds$aou <- factor(birds$aou)
 
 ## Scale raw temperature and precipitation values
-birds$breeding_avg_high_year_1 <- (birds$breeding_avg_high_year_1 - mean(birds$breeding_avg_high_year_1))/sd(birds$breeding_avg_high_year_1)
-birds$breeding_avg_precip_year_1 <- (birds$breeding_avg_precip_year_1 - mean(birds$breeding_avg_precip_year_1))/sd(birds$breeding_avg_precip_year_1)
+birds$breeding_avg_high_year_1_scaled <- (birds$breeding_avg_high_year_1 - mean(birds$breeding_avg_high_year_1))/sd(birds$breeding_avg_high_year_1)
+birds$breeding_avg_precip_year_1_scaled <- (birds$breeding_avg_precip_year_1 - mean(birds$breeding_avg_precip_year_1))/sd(birds$breeding_avg_precip_year_1)
 
 ####--------------------------------------- High Temp Model ------------------------------------- ####
 
@@ -62,7 +62,7 @@ hightemp.function <- function(){
 jags.list.hightemp <- list(n.obs=nrow(birds), 
                            n.species=length(unique(birds$aou)),
                            relative_niche_high = birds$breeding_mean_high_zscore,
-                           year1 = birds$breeding_avg_high_year_1,
+                           year1 = birds$breeding_avg_high_year_1_scaled,
                            relative_year1 = birds$breeding_avg_high_year_1_zscore,
                            species = birds$aou,
                            y = birds$r_star)
@@ -130,7 +130,7 @@ precip.function <- function(){
 jags.list.precip <- list(n.obs=nrow(birds), 
                            n.species=length(unique(birds$aou)),
                            relative_niche_precip = birds$breeding_mean_precip_zscore,
-                           year1 = birds$breeding_avg_precip_year_1,
+                           year1 = birds$breeding_avg_precip_year_1_scaled,
                            relative_year1 = birds$breeding_avg_precip_year_1_zscore,
                            species = birds$aou,
                            y = birds$r_star)
