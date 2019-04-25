@@ -42,12 +42,12 @@ hightemp.function <- function(){
   ## Process model
   for(i in 1:n.obs){
     mu[i] <- b.0 + b.relative_niche_high*relative_niche_high[i] +                     # effect of relative niche temp
-                   b.year1*year1[i] +                                                       # effect of year 1 temp
-                   b.relative_year1*relative_year1[i] +                                     # effect of relative year 1 temp
-                   b.niche_year1*relative_niche_high[i]*year1[i] +                        # effect of niche and year 1 temp interaction
-                   b.niche_relative_year1*relative_niche_high[i]*relative_year1[i] +     # effect of nich and relative year 1 temp interaction
-                   b.species[species[i]]                                                    # random intercept
-  
+      b.year1*year1[i] +                                                       # effect of year 1 temp
+      b.relative_year1*relative_year1[i] +                                     # effect of relative year 1 temp
+      b.niche_year1*relative_niche_high[i]*year1[i] +                        # effect of niche and year 1 temp interaction
+      b.niche_relative_year1*relative_niche_high[i]*relative_year1[i] +     # effect of nich and relative year 1 temp interaction
+      b.species[species[i]]                                                    # random intercept
+    
     y[i] ~ dlnorm(mu[i], tau)                                                               # log normal response
   }
   
@@ -66,7 +66,7 @@ jags.list.hightemp <- list(n.obs=nrow(birds),
                            relative_year1 = birds$breeding_avg_high_year_1_zscore,
                            species = birds$aou,
                            y = birds$r_star)
-                           
+
 
 params.save <- c("b.0", "b.year1", "b.relative_niche_high", " b.relative_year1", "b.niche_year1", "b.niche_relative_year1",  "sigma.species")
 
@@ -81,11 +81,11 @@ parListModules(cl)  # make sure previous line worked.
 ## Run the model here:
 hightemp.mod <- jags.parfit(cl=cl, data=jags.list.hightemp, 
                             params=params.save, model=hightemp.function, 
-                            n.chains=3, n.iter=50000, n.burnin=10000, n.thin=10)
+                            n.chains=3, n.adapt=1000, n.update=5000, thin=10, n.iter=20000)
 stopCluster(cl)    # close out the cluster.
 proc.time() - ptm
 
-save(hightemp.mod, file = "BBS_Data/hightemp_mod.Rdata")
+save(hightemp.mod, file = "hightemp_mod.Rdata")
 
 
 
@@ -110,11 +110,11 @@ precip.function <- function(){
   ## Process model
   for(i in 1:n.obs){
     mu[i] <- b.0 + b.relative_niche_precip*relative_niche_precip[i] +                       # effect of relative niche precip
-                   b.year1*year1[i] +                                                       # effect of year 1 precip
-                   b.relative_year1*relative_year1[i] +                                     # effect of relative year 1 precip
-                   b.niche_year1*relative_niche_precip[i]*year1[i] +                        # effect of niche and year 1 precip interaction
-                   b.niche_relative_year1*relative_niche_precip[i]*relative_year1[i] +      # effect of nich and relative year 1 precip interaction
-                   b.species[species[i]]                                                    # random intercept
+      b.year1*year1[i] +                                                       # effect of year 1 precip
+      b.relative_year1*relative_year1[i] +                                     # effect of relative year 1 precip
+      b.niche_year1*relative_niche_precip[i]*year1[i] +                        # effect of niche and year 1 precip interaction
+      b.niche_relative_year1*relative_niche_precip[i]*relative_year1[i] +      # effect of nich and relative year 1 precip interaction
+      b.species[species[i]]                                                    # random intercept
     
     y[i] ~ dlnorm(mu[i], tau)                                                               # log normal response
   }
@@ -128,12 +128,12 @@ precip.function <- function(){
 
 ## Set data for the model
 jags.list.precip <- list(n.obs=nrow(birds), 
-                           n.species=length(unique(birds$aou)),
-                           relative_niche_precip = birds$breeding_mean_precip_zscore,
-                           year1 = birds$breeding_avg_precip_year_1_scaled,
-                           relative_year1 = birds$breeding_avg_precip_year_1_zscore,
-                           species = birds$aou,
-                           y = birds$r_star)
+                         n.species=length(unique(birds$aou)),
+                         relative_niche_precip = birds$breeding_mean_precip_zscore,
+                         year1 = birds$breeding_avg_precip_year_1_scaled,
+                         relative_year1 = birds$breeding_avg_precip_year_1_zscore,
+                         species = birds$aou,
+                         y = birds$r_star)
 
 
 params.save <- c("b.0", "b.year1", "b.relative_niche_precip", " b.relative_year1", "b.niche_year1", "b.niche_relative_year1",  "sigma.species")
@@ -146,11 +146,13 @@ parLoadModule(cl, "glm")  # load the JAGS module 'glm' on each worker
 parListModules(cl)  # make sure previous line worked.
 ## Run the model here:
 precip.mod <- jags.parfit(cl=cl, data=jags.list.precip, 
-                            params=params.save, model=precip.function, 
-                            n.chains=3, n.iter=50000, n.burnin=10000, n.thin=10)
+                          params=params.save, model=precip.function, 
+                          n.chains=3, n.adapt=1000, n.update=5000, thin=10, n.iter=20000)
+
+
 stopCluster(cl)    # close out the cluster.
 proc.time() - ptm
 
-save(precip.mod, file = "BBS_Data/precip_mod.Rdata")
+save(precip.mod, file = "precip_mod.Rdata")
 
 
