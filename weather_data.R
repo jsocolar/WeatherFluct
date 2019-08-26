@@ -96,7 +96,7 @@ for(i in 1:12){
 # Populate BBS_routes_sp with appropriate data:
 wdata <- list.files("Daymet")
 wd_list <- list() # Store all the imported weather csv files in a list, so we don't have to
-                  # re-import later
+# re-import later
 for(i in 1:dim(BBS_routes_sp)[1]){
   # Get the elevation
   md <- read.csv(paste("Daymet/", wdata[i], sep=""), header=F) ## this reads in the files of the daymet (in alphabetical, not numeric, order)
@@ -122,9 +122,10 @@ for(i in 1:dim(BBS_routes_sp)[1]){
   wd_10 <- wd[wd$yday > 274 & wd$yday < 304, ] # october weather data
   wd_11 <- wd[wd$yday > 305 & wd$yday < 334, ] # november weather data
   wd_12 <- wd[wd$yday > 335 & wd$yday < 365, ] # december weather data
-
+  wd_13 <- wd[wd$yday > 181 & wd$yday < 244, ] # july and august weather data
+  
   # Monthly averages across years
-  for(j in 1:12){
+  for(j in 1:13){
     eval(parse(text = paste0("BBS_routes_sp$mean_high_",j,"[",i,"] <- mean(wd_",j,"$tmax..deg.c)"))) #site mean high
     eval(parse(text = paste0("BBS_routes_sp$mean_low_",j,"[",i,"] <- mean(wd_",j,"$tmin..deg.c)"))) #site mean min
     eval(parse(text = paste0("BBS_routes_sp$mean_precip_",j,"[",i,"] <- mean(wd_",j,"$prcp..mm.day.)"))) #site mean precip
@@ -141,7 +142,7 @@ BBS_routes_data$lon <- BBS_routes_sp@coords[ , 2]
 BBS_weather <- BBS_routes_data
 
 # Prepare columns
-for(j in 1:12){
+for(j in 1:13){
   eval(parse(text = paste0("BBS_weather$monthly_avg_high_",j, "<- NA"))) #mean max
   eval(parse(text = paste0("BBS_weather$monthly_max_high_",j, "<- NA"))) #highest max
   eval(parse(text = paste0("BBS_weather$monthly_avg_low_",j, "<- NA"))) #mean min
@@ -151,8 +152,8 @@ for(j in 1:12){
 }
 
 # Create a list of replicated data.frames, one for each year
-    # Next, we will populate the list as appropriate, and then rBind its elements together.
-    # The row indexing is much simpler this way, compared to rBinding and then populating.
+# Next, we will populate the list as appropriate, and then rBind its elements together.
+# The row indexing is much simpler this way, compared to rBinding and then populating.
 df.list <- list()
 for(i in 1980:2016){
   BBS_weather_y <- BBS_weather
@@ -176,8 +177,9 @@ for(i in 1:dim(BBS_routes_sp)[1]){
   wd_10 <- wd[wd$yday > 274 & wd$yday < 304, ] # october weather data
   wd_11 <- wd[wd$yday > 305 & wd$yday < 334, ] # november weather data
   wd_12 <- wd[wd$yday > 335 & wd$yday < 365, ] # december weather data
+  wd_13 <- wd[wd$yday > 181 & wd$yday < 244, ] # july and august weather data
   
-  for(j in 1:12){
+  for(j in 1:13){
     for(k in 1980:2016){
       eval(parse(text = paste0("yr_k <- wd_",j,"[which(wd_",j,"$year==",k,"),]")))
       eval(parse(text = paste0("df.list[[", k - 1979 ,"]]$monthly_avg_high_",j,"[",i,"] <- mean(yr_k$tmax..deg.c.)"))) #mean max
@@ -223,66 +225,30 @@ lag_1 <- dplyr::inner_join(lag_1, good_birds, by = "aou")
 # month, the year_1 values for each month, and the year_1 - 1 values for each month.
 
 # For the cross-year averages, we don't need to keep track of year.
-survey_weather_averages <- survey_weather[1:5651 , 6:55]
+survey_weather_averages <- survey_weather[1:5651 , 6:59] ### UGH CHECK THESE NuMBERS 
 lag_weather <- dplyr::inner_join(lag_1, survey_weather_averages, by = "routeID")
 
 # We append the year_0 data
 lag_weather$year_0 <- lag_weather$year_1 - 1
-survey_weather_0 <- survey_weather[ , c(6, 58:130)]
+survey_weather_0 <- survey_weather[ , c(6, 62:140)]
 names(survey_weather_0)[which(names(survey_weather_0) == "year")] <- "year_0"
-names(survey_weather_0)[2:73] <- paste0(names(survey_weather_0)[2:73], "_year_0")
+names(survey_weather_0)[2:79] <- paste0(names(survey_weather_0)[2:79], "_year_0")
 
 lag_weather <- dplyr::inner_join(lag_weather, survey_weather_0, by = c("routeID", "year_0"))
 
 # year_1 data
-survey_weather_1 <- survey_weather[ , c(6, 58:130)]
+survey_weather_1 <- survey_weather[ , c(6, 62:140)]
 names(survey_weather_1)[which(names(survey_weather_1) == "year")] <- "year_1"
-names(survey_weather_1)[2:73] <- paste0(names(survey_weather_1)[2:73], "_year_1")
+names(survey_weather_1)[2:79] <- paste0(names(survey_weather_1)[2:79], "_year_1")
 
 lag_weather <- dplyr::inner_join(lag_weather, survey_weather_1, by = c("routeID", "year_1"))
 
 # year_2 data
-survey_weather_2 <- survey_weather[ , c(6, 58:130)]
+survey_weather_2 <- survey_weather[ , c(6, 62:140)]
 names(survey_weather_2)[which(names(survey_weather_2) == "year")] <- "year_2"
-names(survey_weather_2)[2:73] <- paste0(names(survey_weather_2)[2:73], "_year_2")
+names(survey_weather_2)[2:79] <- paste0(names(survey_weather_2)[2:79], "_year_2")
 
 lag_weather <- dplyr::inner_join(lag_weather, survey_weather_2, by = c("routeID", "year_2"))
 
 save(lag_weather, file = "BBS_Data/lag_weather.Rdata")
 write.csv(lag_weather, file = "BBS_Data/lag_weather.csv")
-
-#### Z-score calculation:
-# The z-scores represent whether a route is near the center or near the edge of a species range
-# for a particular weather variable. They can be calculated only for species that are detected
-# on a sufficient number of unique routes. Data exploration to determine a good minimum number of
-# routes for a cut-off:
-lag_weather <- read.csv("BBS_Data/lag_weather.csv", header = TRUE)
-
-route_numbers <- doBy::summaryBy(routeID ~ AOU, FUN=length, data=lag_weather)
-hist(route_numbers$routeID.length[which(route_numbers$routeID.length < 200)])
-z_score_species <- route_numbers$AOU[which(route_numbers$routeID.length > 69)]
-
-# A function that takes a column name, a list of species for which z-scores are desired,
-# and a lag_weather dataframe as input, and gives as output a lag_weather dataframe with a 
-# column of z-scores appended, giving the z-score for the desired species and NA elsewhere
-# Repeated application of lag_weather <- zsc(lag_weather, column_name, z_score_species) for the 
-# desired columns will give the desired final output
-zsc <- function(lag_weather, column_name, z_score_species){
-  oldcol <- which(names(lag_weather) == column_name)
-  newcol <- rep(NA, nrow(lag_weather))
-  for(i in z_score_species){
-    lag_SP <- lag_weather[which(lag_weather$aou == i), ]
-    unique_routes <- lag_SP[!duplicated(lag_SP$routeID),]
-    unique_routes$zscores <- scale(unique_routes[, oldcol])
-    for(j in unique_routes$routeID){
-      newcol[lag_weather$routeID == j & lag_weather$aou == i] <- unique_routes$zscores[unique_routes$routeID == j]
-    }
-  }
-  lag_weather <- cbind(lag_weather, newcol)
-  names(lag_weather)[ncol(lag_weather)] <- paste0(column_name, "_zscore")
-  return(lag_weather)
-}
-
-# Below is an example to compute z-scores for March average daily high temps. 
-# WARNING: running this will take a while!
-test <- zsc(lag_weather, "mean_high_3", z_score_species)
