@@ -194,10 +194,8 @@ for(i in 1:dim(BBS_routes_sp)[1]){
 
 # rBind the list into a single large data.frame
 survey_weather <- dplyr::bind_rows(df.list)
-save(survey_weather, file = "survey_weather.Rdata")
 
 ## Combine with the lag data and create a new data object
-load("survey_weather.Rdata")
 
 # read in the lag data
 lag_1 <- read.csv("BBS_Data/lag1_80to16_data.csv")
