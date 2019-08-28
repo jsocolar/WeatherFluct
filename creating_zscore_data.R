@@ -4,8 +4,8 @@
 
 # Set working directory
 
-setwd("C:/Users/Tingley Lab_2/Dropbox/BBS_Project") #Tingley lab computer
-
+#setwd("C:/Users/Tingley Lab_2/Dropbox/BBS_Project") #Tingley lab computer
+#setwd("/Users/austinspence/Dropbox/BBS_Project")
 # Load in the full data set
 
 load("./BBS_Data/breeding_and_month_weather.RData")
@@ -45,7 +45,7 @@ full_birds <- zsc(lag_weather = full_birds, column_name = c("breeding_mean_swe")
 full_birds$breeding_avg_high_year_1_zscore <- (full_birds$breeding_avg_high_year_1 - full_birds$breeding_mean_high)/full_birds$breeding_sd_high # was this specific year an anomoly for mean high temp?
 full_birds$breeding_avg_low_year_1_zscore <- (full_birds$breeding_avg_low_year_1 - full_birds$breeding_mean_low)/full_birds$breeding_sd_low # was this specific year an anomoly for mean low temp?
 full_birds$breeding_avg_precip_year_1_zscore <- (full_birds$breeding_avg_precip_year_1 - full_birds$breeding_mean_precip)/full_birds$breeding_sd_precip # was this specific year an anomoly for mean precip?
-
+full_birds$monthly_avg_high_13_year_1_zscore <- (full_birds$monthly_avg_high_13_year_1 - full_birds$mean_high_jul_aug)/full_birds$jul_aug_sd_high #was this specific year an anomoly for jul/aug high temp?
 
 save(full_birds, file = "BBS_Data/full_birds_dataset.Rdata")
 write.csv(full_birds, file = "BBS_Data/full_birds_dataset.csv")
@@ -60,5 +60,3 @@ passeriformes <- droplevels(passeriformes)
 
 save(passeriformes, file = "BBS_Data/passeriformes_dataset.Rdata")
 write.csv(full_birds, file = "BBS_Data/passeriformes_dataset.csv")
-
-
