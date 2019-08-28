@@ -124,7 +124,7 @@ for(i in 1:dim(BBS_routes_sp)[1]){
   wd_12 <- wd[wd$yday > 335 & wd$yday < 365, ] # december weather data
   wd_13 <- wd[wd$yday > 181 & wd$yday < 244, ] # july and august weather data
   
- # Monthly mean and sd across years
+  # Monthly mean and sd across years
   for(j in 1:13){
     eval(parse(text = paste0("BBS_routes_sp$mean_high_",j,"[",i,"] <- mean(wd_",j,"$tmax..deg.c)"))) #site mean high
     eval(parse(text = paste0("BBS_routes_sp$sd_high_",j,"[",i,"] <- sd(wd_",j,"$tmax..deg.c)"))) #site mean high
@@ -235,26 +235,26 @@ lag_1 <- dplyr::inner_join(lag_1, good_birds, by = "aou")
 # month, the year_1 values for each month, and the year_1 - 1 values for each month.
 
 # For the cross-year averages, we don't need to keep track of year.
-survey_weather_averages <- survey_weather[1:5651 , 6:59] ### UGH CHECK THESE NuMBERS 
+survey_weather_averages <- survey_weather[1:5651 , 6:111] 
 lag_weather <- dplyr::inner_join(lag_1, survey_weather_averages, by = "routeID")
 
 # We append the year_0 data
 lag_weather$year_0 <- lag_weather$year_1 - 1
-survey_weather_0 <- survey_weather[ , c(6, 62:140)]
+survey_weather_0 <- survey_weather[ , c(6, 114:192)]
 names(survey_weather_0)[which(names(survey_weather_0) == "year")] <- "year_0"
 names(survey_weather_0)[2:79] <- paste0(names(survey_weather_0)[2:79], "_year_0")
 
 lag_weather <- dplyr::inner_join(lag_weather, survey_weather_0, by = c("routeID", "year_0"))
 
 # year_1 data
-survey_weather_1 <- survey_weather[ , c(6, 62:140)]
+survey_weather_1 <- survey_weather[ , c(6, 114:192)]
 names(survey_weather_1)[which(names(survey_weather_1) == "year")] <- "year_1"
 names(survey_weather_1)[2:79] <- paste0(names(survey_weather_1)[2:79], "_year_1")
 
 lag_weather <- dplyr::inner_join(lag_weather, survey_weather_1, by = c("routeID", "year_1"))
 
 # year_2 data
-survey_weather_2 <- survey_weather[ , c(6, 62:140)]
+survey_weather_2 <- survey_weather[ , c(6, 114:192)]
 names(survey_weather_2)[which(names(survey_weather_2) == "year")] <- "year_2"
 names(survey_weather_2)[2:79] <- paste0(names(survey_weather_2)[2:79], "_year_2")
 
