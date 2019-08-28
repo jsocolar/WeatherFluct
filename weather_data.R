@@ -124,12 +124,24 @@ for(i in 1:dim(BBS_routes_sp)[1]){
   wd_12 <- wd[wd$yday > 335 & wd$yday < 365, ] # december weather data
   wd_13 <- wd[wd$yday > 181 & wd$yday < 244, ] # july and august weather data
   
-  # Monthly averages across years
+ # Monthly mean and sd across years
   for(j in 1:13){
     eval(parse(text = paste0("BBS_routes_sp$mean_high_",j,"[",i,"] <- mean(wd_",j,"$tmax..deg.c)"))) #site mean high
+    eval(parse(text = paste0("BBS_routes_sp$sd_high_",j,"[",i,"] <- sd(wd_",j,"$tmax..deg.c)"))) #site mean high
+    
+    
     eval(parse(text = paste0("BBS_routes_sp$mean_low_",j,"[",i,"] <- mean(wd_",j,"$tmin..deg.c)"))) #site mean min
+    eval(parse(text = paste0("BBS_routes_sp$sd_low_",j,"[",i,"] <- sd(wd_",j,"$tmin..deg.c)"))) #site mean min
+    
+    
     eval(parse(text = paste0("BBS_routes_sp$mean_precip_",j,"[",i,"] <- mean(wd_",j,"$prcp..mm.day.)"))) #site mean precip
+    eval(parse(text = paste0("BBS_routes_sp$sd_precip_",j,"[",i,"] <- sd(wd_",j,"$prcp..mm.day.)"))) #site mean precip
+    
+    
     eval(parse(text = paste0("BBS_routes_sp$mean_swe_",j,"[",i,"] <- mean(wd_",j,"$swe..kg.m.2)"))) #site mean swe
+    eval(parse(text = paste0("BBS_routes_sp$sd_swe_",j,"[",i,"] <- sd(wd_",j,"$swe..kg.m.2)"))) #site mean swe
+    
+    
   }
   print(i)
 }
