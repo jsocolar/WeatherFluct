@@ -1,19 +1,29 @@
 #### -------------------------------------------------------------------------------- ####
-#### Preliminary Bayesian multi-species models
+#### Cull data to passeriformes with good data coverage
 #### -------------------------------------------------------------------------------- ####
 
 # Created by Austin 
+# August 30th, 2019
+
+# Set working directory
+
+#setwd("C:/Users/Tingley Lab_2/Dropbox/BBS_Project") #Tingley lab computer
+#setwd("/Users/austinspence/Dropbox/BBS_Project")
+
+# Load in the full data set
+
+load("./BBS_Data/full_birds.RData")
+
 
 # Limit it to Passerines
 
 
-passeriformes <- full_birds[which(full_birds$ORDER == "Passeriformes"),]
+full_passeriformes <- full_birds[which(full_birds$ORDER == "Passeriformes"),]
 
-passeriformes <- droplevels(passeriformes)
+full_passeriformes <- droplevels(passeriformes)
 
 
-save(passeriformes, file = "BBS_Data/passeriformes_dataset.Rdata")
-write.csv(full_birds, file = "BBS_Data/passeriformes_dataset.csv")
+save(full_passeriformes, file = "BBS_Data/full_passeriformes.Rdata")
 
 
 #setwd("~/Dropbox/____Projects____/BBS_Project") # Andrew
@@ -21,8 +31,8 @@ write.csv(full_birds, file = "BBS_Data/passeriformes_dataset.csv")
 setwd("./BBS_Data")
 
 ## Load and organize data
-load("passeriformes_dataset.Rdata")
-birds <- passeriformes[,c(1:3,10,11,18,26,299,303,409,411,413:415,417:419)] # simplify dataset
+load("full_passeriformes.Rdata")
+passeriformes <- full_passeriformes[,c(1:3,10,11,18,26,299,303,409,411,413:415,417:419)] # simplify dataset
 
 ## Remove birds with less than 100 lag observations and less than 20 different sites
 birds <- birds[which(birds$English_Common_Name != "Abert's Towhee"),]
