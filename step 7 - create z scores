@@ -52,14 +52,3 @@ full_birds$monthly_avg_precip_13_year_1_zscore <- (full_birds$monthly_avg_precip
 
 save(full_birds, file = "BBS_Data/full_birds_dataset.Rdata")
 write.csv(full_birds, file = "BBS_Data/full_birds_dataset.csv")
-
-# Limit it to Passerines
-
-
-passeriformes <- full_birds[which(full_birds$ORDER == "Passeriformes"),]
-
-passeriformes <- droplevels(passeriformes)
-
-
-save(passeriformes, file = "BBS_Data/passeriformes_dataset.Rdata")
-write.csv(full_birds, file = "BBS_Data/passeriformes_dataset.csv")
