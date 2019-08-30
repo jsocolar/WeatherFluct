@@ -1,0 +1,71 @@
+#### -------------------------------------------------------------------------------- ####
+#### Preliminary Bayesian multi-species models
+#### -------------------------------------------------------------------------------- ####
+
+# Created by Austin 
+
+# Limit it to Passerines
+
+
+passeriformes <- full_birds[which(full_birds$ORDER == "Passeriformes"),]
+
+passeriformes <- droplevels(passeriformes)
+
+
+save(passeriformes, file = "BBS_Data/passeriformes_dataset.Rdata")
+write.csv(full_birds, file = "BBS_Data/passeriformes_dataset.csv")
+
+
+#setwd("~/Dropbox/____Projects____/BBS_Project") # Andrew
+#setwd("C:/Users/Tingley Lab_2/Dropbox/BBS_Project") #Tingley lab computer
+setwd("./BBS_Data")
+
+## Load and organize data
+load("passeriformes_dataset.Rdata")
+birds <- passeriformes[,c(1:3,10,11,18,26,299,303,409,411,413:415,417:419)] # simplify dataset
+
+## Remove birds with less than 100 lag observations and less than 20 different sites
+birds <- birds[which(birds$English_Common_Name != "Abert's Towhee"),]
+birds <- birds[which(birds$English_Common_Name != "American Dipper"),]
+birds <- birds[which(birds$English_Common_Name != "American Pipit"),]
+birds <- birds[which(birds$English_Common_Name != "American Tree Sparrow"),]
+birds <- birds[which(birds$English_Common_Name != "Bay-breasted Warbler"),]
+birds <- birds[which(birds$English_Common_Name != "Bell's Sparrow"),]
+birds <- birds[which(birds$English_Common_Name != "Black-capped Vireo"),]
+birds <- birds[which(birds$English_Common_Name != "Black-crested Titmouse"),]
+birds <- birds[which(birds$English_Common_Name != "Blackpoll Warbler"),]
+birds <- birds[which(birds$English_Common_Name != "Boat-tailed Grackle"),]
+birds <- birds[which(birds$English_Common_Name != "Bohemian Waxwing"),]
+birds <- birds[which(birds$English_Common_Name != "Boreal Chickadee"),]
+birds <- birds[which(birds$English_Common_Name != "Cape May Warbler"),]
+birds <- birds[which(birds$English_Common_Name != "Cerulean Warbler"),]
+birds <- birds[which(birds$English_Common_Name != "Chestnut-collared Longspur"),]
+birds <- birds[which(birds$English_Common_Name != "Common Redpoll"),]
+birds <- birds[which(birds$English_Common_Name != "Connecticut Warbler"),]
+birds <- birds[which(birds$English_Common_Name != "Golden-crowned Sparrow"),]
+birds <- birds[which(birds$English_Common_Name != "Gray-cheeked Thrush"),]
+birds <- birds[which(birds$English_Common_Name != "Juniper Titmouse"),]
+birds <- birds[which(birds$English_Common_Name != "Lawrence's Goldfinch"),]
+birds <- birds[which(birds$English_Common_Name != "Le Conte's Thrasher"),]
+birds <- birds[which(birds$English_Common_Name != "Lucy's Warbler"),]
+birds <- birds[which(birds$English_Common_Name != "McCown's Longspur"),]
+birds <- birds[which(birds$English_Common_Name != "Nelson's Sparrow"),]
+birds <- birds[which(birds$English_Common_Name != "Northwestern Crow"),]
+birds <- birds[which(birds$English_Common_Name != "Palm Warbler"),]
+birds <- birds[which(birds$English_Common_Name != "Pine Grosbeak"),]
+birds <- birds[which(birds$English_Common_Name != "Rusty Blackbird"),]
+birds <- birds[which(birds$English_Common_Name != "Sprague's Pipit"),]
+birds <- birds[which(birds$English_Common_Name != "Swainson's Warbler"),]
+birds <- birds[which(birds$English_Common_Name != "unid. California Scrub-Jay / Woodhouse's Scrub-Jay"),]
+
+## Some of the birds are not lumped that should be
+birds$aou[birds$aou == 6556] <- 6550 #yellow rumped together
+birds$aou[birds$aou == 6560] <- 6550 #yellow rumped together
+birds$aou[birds$aou == 5677] <- 5670 #juncos together
+birds$aou[birds$aou == 5690] <- 5670 #juncos together
+birds$aou[birds$aou == 5660] <- 5670 #juncos together
+birds$aou[birds$aou == 5680] <- 5670 #juncos together
+birds$aou[birds$aou == 5671] <- 5670 #juncos together
+
+## Refactor birds
+birds$aou <- factor(birds$aou)
