@@ -15,6 +15,9 @@ setwd("./BBS_Data")
 ## Load and organize data
 load("passeriformes.Rdata")
 
+## Change the name 
+birds <- passeriformes
+
 ## Scale appropriate data
 
 ## Scale raw temperature and precipitation values
