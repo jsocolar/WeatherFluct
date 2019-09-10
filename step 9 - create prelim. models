@@ -26,8 +26,8 @@ birds$monthly_avg_precip_13_year_1_zscore <- birds$monthly_avg_precip_13_year_1 
 ## Scale raw temperature and precipitation values
 birds$breeding_avg_high_year_1_scaled <- (birds$breeding_avg_high_year_1 - mean(birds$breeding_avg_high_year_1))/sd(birds$breeding_avg_high_year_1)
 birds$breeding_avg_precip_year_1_scaled <- (birds$breeding_avg_precip_year_1 - mean(birds$breeding_avg_precip_year_1))/sd(birds$breeding_avg_precip_year_1)
-birds$monthly_avg_high_13_year_1_zscore <- birds$monthly_avg_high_13_year_1 - mean(birds$monthly_avg_high_13_year_1)/sd(birds$monthly_avg_high_13_year_1)
-birds$monthly_avg_precip_13_year_1_zscore <- birds$monthly_avg_precip_13_year_1 - mean(birds$monthly_avg_precip_13_year_1)/sd(birds$monthly_avg_precip_13_year_1)
+birds$monthly_avg_high_13_year_1_scaled <- birds$monthly_avg_high_13_year_1 - mean(birds$monthly_avg_high_13_year_1)/sd(birds$monthly_avg_high_13_year_1)
+birds$monthly_avg_precip_13_year_1_scaled <- birds$monthly_avg_precip_13_year_1 - mean(birds$monthly_avg_precip_13_year_1)/sd(birds$monthly_avg_precip_13_year_1)
 
 ####--------------------------------- Breeding High Temp Model ----------------------------- ####
 
@@ -328,7 +328,7 @@ ja.hightemp.function <- function(){
 jags.list.ja.hightemp <- list(n.obs=nrow(birds), 
                               n.species=length(unique(birds$aou)),
                               relative_niche_high = birds$mean_high_jul_aug_zscore,
-                              year1 = birds$monthly_avg_high_13_year_1,
+                              year1 = birds$monthly_avg_high_13_year_1_scaled,
                               species = birds$aou,
                               y = birds$r_star)
 
@@ -455,7 +455,7 @@ ja.precip.function <- function(){
 jags.list.ja.precip <- list(n.obs=nrow(birds), 
                             n.species=length(unique(birds$aou)),
                             relative_niche_precip = birds$mean_precip_jul_aug_zscore,
-                            year1 = birds$monthly_avg_precip_13_year_1,
+                            year1 = birds$monthly_avg_precip_13_year_1_scaled,
                             species = birds$aou,
                             y = birds$r_star)
 
