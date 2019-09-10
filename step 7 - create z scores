@@ -50,5 +50,4 @@ full_birds$breeding_avg_precip_year_1_zscore <- (full_birds$breeding_avg_precip_
 full_birds$monthly_avg_high_13_year_1_zscore <- (full_birds$monthly_avg_high_13_year_1 - full_birds$mean_high_jul_aug)/full_birds$sd_high_jul_aug #was this specific year an anomoly for jul/aug high temp?
 full_birds$monthly_avg_precip_13_year_1_zscore <- (full_birds$monthly_avg_precip_13_year_1 - full_birds$mean_precip_jul_aug)/full_birds$sd_precip_jul_aug #was this specific year an anomoly for jul/aug high precip?
 
-save(full_birds, file = "BBS_Data/full_birds_dataset.Rdata")
-write.csv(full_birds, file = "BBS_Data/full_birds_dataset.csv")
+#save(full_birds, file = "BBS_Data/full_birds_dataset.Rdata")
