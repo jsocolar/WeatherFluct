@@ -276,5 +276,7 @@ names(second_breeding_weather_2)[2:385] <- paste0(names(second_breeding_weather_
 
 lag_breeding_weather <- dplyr::inner_join(lag_breeding_weather, second_breeding_weather_2, by = c("routeID", "year_2"))
 
+lag_2nd_breeding_weather <- lag_breeding_weather
+
 save(lag_2nd_breeding_weather, file = "lag_2nd_breeding_weather.Rdata")
-write.csv(lag_2nd_breeding_weather, file = "lag_2nd_breeding_weather.csv")
+#write.csv(lag_2nd_breeding_weather, file = "lag_2nd_breeding_weather.csv")
