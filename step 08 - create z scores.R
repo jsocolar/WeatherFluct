@@ -51,3 +51,27 @@ full_birds$monthly_avg_high_13_year_1_zscore <- (full_birds$monthly_avg_high_13_
 full_birds$monthly_avg_precip_13_year_1_zscore <- (full_birds$monthly_avg_precip_13_year_1 - full_birds$mean_precip_jul_aug)/full_birds$sd_precip_jul_aug #was this specific year an anomoly for jul/aug high precip?
 
 #save(full_birds, file = "BBS_Data/full_birds_dataset.Rdata")
+
+
+# A function that takes a column name
+# and a lag_weather dataframe as input, and gives as output a lag_weather dataframe with a 
+# column of route-specific anomalies for that column appended
+# THIS FUNCTION COMPUTES THE ANNUAL WEATHER ANOMALIES ACROSS THE YEARS FOR WHICH WE HAVE AT LEAST
+# SOME BIRD DATA ON THE ROUTE. WE PROBABLY ACTUALLY WANT THE ANOMALIES COMPUTED OVER ALL YEARS FOR
+# WHICH WE HAVE DATA FOR *ANY* ROUTE. I CAN DO THIS LATER, BUT IT WILL REQUIRE ADDITIONAL DAYMET
+# DOWNLOAD!
+anom <- function(lag_weather, column_name){
+  oldcol <- which(names(lag_weather) == column_name)
+  newcol <- rep(NA, nrow(lag_weather))
+  for(i in unique(lag_weather$routeID)){
+    rdf <- lag_weather[lag_weather$routeID == i, c("year_1", oldcol)]
+    rdf <- rdf[!duplicated(rdf$year_1), ]
+    rdf$anom <- scale(rdf[, oldcol])
+    for(j in rdf$year_1){
+      newcol[lag_weather$routeID == i & lag_weather$year_1 == j] <- rdf$anom[rdf$year_1 == j]
+    }
+  }
+  lag_weather <- cbind(lag_weather, newcol)
+  names(lag_weather)[ncol(lag_weather)] <- paste0(column_name, "_anom")
+  return(lag_weather)
+}
