@@ -12,7 +12,8 @@
 
 # Load in the full data set
 
-load("./BBS_Data/full_birds_dataset.RData")
+load("./BBS_Data/full_birds_dataset.RData")  #nope, still doesn't work. full_birds_dataset is already culled
+# to 17 columns
 
 
 # Limit it to Passerines
