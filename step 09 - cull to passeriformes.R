@@ -12,7 +12,7 @@
 
 # Load in the full data set
 
-load("./BBS_Data/full_birds.RData")
+load("./BBS_Data/full_birds_dataset.RData")
 
 
 # Limit it to Passerines
