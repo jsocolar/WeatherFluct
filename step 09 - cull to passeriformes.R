@@ -12,8 +12,7 @@
 
 # Load in the full data set
 
-load("./BBS_Data/full_birds_dataset.RData")  #nope, still doesn't work. full_birds_dataset is already culled
-# to 17 columns
+load("./BBS_Data/full_birds_dataset.RData")  #Should be fixed now - this is all the weather and all the birds
 
 
 # Limit it to Passerines
@@ -21,10 +20,11 @@ load("./BBS_Data/full_birds_dataset.RData")  #nope, still doesn't work. full_bir
 
 full_passeriformes <- full_birds[which(full_birds$ORDER == "Passeriformes"),]
 
-full_passeriformes <- droplevels(passeriformes)
+full_passeriformes <- droplevels(full_passeriformes)
 
 ## simplify the dataset to only what we need for analysis
-passeriformes <- full_passeriformes[,c(1:3,10,11,18,26,299,303,409,411,413:415,417:419)] # simplify dataset
+passeriformes <- full_passeriformes[,c(1:3,10,11,18,26,299,303,399:404,425:430,437:456)] 
+
 
 ## Remove birds with less than 100 lag observations and less than 20 different sites
 passeriformes <- passeriformes[which(passeriformes$English_Common_Name != "Abert's Towhee"),]
@@ -74,4 +74,3 @@ passeriformes$aou <- factor(passeriformes$aou)
 
 ## Save the data for analysis
 save(passeriformes, file = "passeriformes.Rdata")
-
