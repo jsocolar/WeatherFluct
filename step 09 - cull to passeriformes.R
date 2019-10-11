@@ -23,7 +23,7 @@ full_passeriformes <- full_birds[which(full_birds$ORDER == "Passeriformes"),]
 full_passeriformes <- droplevels(full_passeriformes)
 
 ## simplify the dataset to only what we need for analysis
-passeriformes <- full_passeriformes[,c(1:3,10,11,18,26,299,303,399:404,425:430,437:456)] 
+passeriformes <- full_passeriformes[,c(1:4,10,11,18,26,299,303,399:404,425:430,437:456)] 
 
 
 ## Remove birds with less than 100 lag observations and less than 20 different sites
