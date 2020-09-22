@@ -36,21 +36,23 @@ zsc <- function(lag_weather, column_name, z_score_species){
 
 
 #### Create the z_scores for desired columns across all the sites (gives you if it is in warm or cold part of range)
+aou_species <- unique(breed_postbreed_month_weather$aou)
+
 # Breeding weather
-full_birds <- zsc(lag_weather = breed_postbreed_month_weather, column_name = c("breeding_mean_high"), z_score_species = breed_postbreed_month_weather)  # where is it at in the species breeding high thermal range?
-full_birds <- zsc(lag_weather = full_birds, column_name = c("breeding_mean_low"), z_score_species = breed_postbreed_month_weather)                   # where is it at in the species breeding low thermal range?
-full_birds <- zsc(lag_weather = full_birds, column_name = c("breeding_mean_precip"), z_score_species = breed_postbreed_month_weather)                # where is it at in the species breeding precipitation range?
-full_birds <- zsc(lag_weather = full_birds, column_name = c("breeding_mean_swe"), z_score_species = breed_postbreed_month_weather)                   # where is it at in the species breeding snow range?
+full_birds <- zsc(lag_weather = breed_postbreed_month_weather, column_name = c("breeding_mean_high"), z_score_species = aou_species)  # where is it at in the species breeding high thermal range?
+full_birds <- zsc(lag_weather = full_birds, column_name = c("breeding_mean_low"), z_score_species = aou_species)                   # where is it at in the species breeding low thermal range?
+full_birds <- zsc(lag_weather = full_birds, column_name = c("breeding_mean_precip"), z_score_species = aou_species)                # where is it at in the species breeding precipitation range?
+full_birds <- zsc(lag_weather = full_birds, column_name = c("breeding_mean_swe"), z_score_species = aou_species)                   # where is it at in the species breeding snow range?
 
 # Post-breeding weather
-full_birds <- zsc(lag_weather = full_birds, column_name = c("post_breeding_mean_high"), z_score_species = breed_postbreed_month_weather)                  # where is it at in the species post-breeding high thermal range?
-full_birds <- zsc(lag_weather = full_birds, column_name = c("post_breeding_mean_low"), z_score_species = breed_postbreed_month_weather)                   # where is it at in the species post-breeding low thermal range?
-full_birds <- zsc(lag_weather = full_birds, column_name = c("post_breeding_mean_precip"), z_score_species = breed_postbreed_month_weather)                # where is it at in the species post-breeding precipitation range?
-full_birds <- zsc(lag_weather = full_birds, column_name = c("post_breeding_mean_swe"), z_score_species = breed_postbreed_month_weather)                   # where is it at in the species post-breeding snow range?
+full_birds <- zsc(lag_weather = full_birds, column_name = c("post_breeding_mean_high"), z_score_species = aou_species)                  # where is it at in the species post-breeding high thermal range?
+full_birds <- zsc(lag_weather = full_birds, column_name = c("post_breeding_mean_low"), z_score_species = aou_species)                   # where is it at in the species post-breeding low thermal range?
+full_birds <- zsc(lag_weather = full_birds, column_name = c("post_breeding_mean_precip"), z_score_species = aou_species)                # where is it at in the species post-breeding precipitation range?
+full_birds <- zsc(lag_weather = full_birds, column_name = c("post_breeding_mean_swe"), z_score_species = aou_species)                   # where is it at in the species post-breeding snow range?
 
 # July/August weather
-full_birds <- zsc(lag_weather = full_birds, column_name = c("mean_high_jul_aug"), z_score_species = breed_postbreed_month_weather)                   # where is it at in the species jul/aug high thermal range?
-full_birds <- zsc(lag_weather = full_birds, column_name = c("mean_precip_jul_aug"), z_score_species = breed_postbreed_month_weather)                 # where is it at in the species jul/aug low thermal range?
+full_birds <- zsc(lag_weather = full_birds, column_name = c("mean_high_jul_aug"), z_score_species = aou_species)                   # where is it at in the species jul/aug high thermal range?
+full_birds <- zsc(lag_weather = full_birds, column_name = c("mean_precip_jul_aug"), z_score_species = aou_species)                 # where is it at in the species jul/aug low thermal range?
 
 
 
